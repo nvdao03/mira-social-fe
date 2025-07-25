@@ -1,11 +1,9 @@
-import Login from './pages/Login'
+import useRouterElements from './useRouterElements'
 
 function App() {
-  return (
-    <>
-      <Login />
-    </>
-  )
+  const routerElements = useRouterElements()
+
+  return <>{routerElements}</>
 }
 
 export default App

@@ -7,7 +7,11 @@ export default {
     container: false
   },
   theme: {
-    extend: {}
+    extend: {
+      colors: {
+        color_auth: '#F0F6FC'
+      }
+    }
   },
   plugins: [
     plugin(function ({ addComponents, theme }) {
