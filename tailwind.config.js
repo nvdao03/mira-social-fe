@@ -9,7 +9,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        color_auth: '#F0F6FC'
+        color_auth: '#F0F6FC',
+        color_text: '#E7E9EA'
       }
     }
   },

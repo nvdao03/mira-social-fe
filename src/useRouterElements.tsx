@@ -7,6 +7,9 @@ import SignIn from './pages/SignIn'
 import MainLayout from './layouts/MainLayout'
 import { useContext } from 'react'
 import { AppContext } from './contexts/app.context'
+import Profile from './pages/Profile'
+import Bookmark from './pages/Bookmark'
+import Setting from './pages/Setting'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -28,6 +31,30 @@ function useRouterElements() {
           element: (
             <MainLayout>
               <Home />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.PROFILE,
+          element: (
+            <MainLayout>
+              <Profile />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.BOOKMARK,
+          element: (
+            <MainLayout>
+              <Bookmark />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.SETTINGS,
+          element: (
+            <MainLayout>
+              <Setting />
             </MainLayout>
           )
         }

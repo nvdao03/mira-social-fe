@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import googleIcon from '../../assets/imgs/google.svg'
-import Logo from '../../components/Logo'
+import Logo from '../../assets/imgs/logo.png'
 import { PATH } from '../../constants/path'
 import { schemaSignIn, type SignInFormValues } from '../../utils/validation'
 import InputAuth from '../../components/InputAuth'
@@ -62,7 +62,7 @@ function SignIn() {
     <div className='container h-[100vh]'>
       <div className='h-full flex justify-center items-center flex-col -mt-[20px] md:-mt-[50px]'>
         <div className='text-center w-full sm:w-[350px] text-white'>
-          <Logo />
+          <img src={Logo} alt='logo' className='w-[45px] h-[45px] mx-auto' />
           <h1 className='mt-4 text-[20px] text-color_auth font-semibold'>Sign in to Mira</h1>
           <form className='mt-7' onSubmit={handleSubmitForm}>
             <div className='text-[14px]'>
