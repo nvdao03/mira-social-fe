@@ -17,7 +17,7 @@ import { HTTP_STATUS } from '../../constants/httpStatus'
 type SignInFromData = SignInFormValues
 
 function SignIn() {
-  const { setIsauthenticated } = useContext(AppContext)
+  const { setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } = useContext(AppContext)
   const navigate = useNavigate()
 
   const {
@@ -35,9 +35,14 @@ function SignIn() {
 
   const handleSubmitForm = handleSubmit((data: SignInFromData) => {
     signInMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (response) => {
+        console.log(response)
         toast.success(MESSAGE.LOGIN_SUCCESSFULLY)
         setIsauthenticated(true)
+        setRefreshToken(response.data.data.refresh_token)
+        setAvatar(response.data.data.user.avatar)
+        setUsername(response.data.data.user.username)
+        setName(response.data.data.user.name)
         navigate(PATH.HOME)
       },
       onError: (error: any) => {

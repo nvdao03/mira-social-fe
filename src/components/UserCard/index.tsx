@@ -27,7 +27,12 @@ function UserCard() {
           <span className='text-[#71767B] text-[12px] truncate max-w-[100px]'>@OpenAI</span>
         </div>
       </div>
-      <button className='border border-solid text-[#0F1419] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 hover:bg-opacity-90 transition-all duration-200 ease-in-out'>
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
+        className='border border-solid text-[#0F1419] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 hover:bg-opacity-90 transition-all duration-200 ease-in-out'
+      >
         Follow
       </button>
     </Link>

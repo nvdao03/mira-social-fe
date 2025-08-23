@@ -19,7 +19,15 @@ function InputAuth({
 }: InputAuthPropsType) {
   return (
     <div>
-      <input type={type} placeholder={placeholder} className={classNameInput} name={name} {...register(name)} id={id} />
+      <input
+        autoComplete='off'
+        type={type}
+        placeholder={placeholder}
+        className={classNameInput}
+        name={name}
+        {...register(name)}
+        id={id}
+      />
       <p className={classNameError}>{errorMessage}</p>
     </div>
   )

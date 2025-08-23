@@ -13,7 +13,7 @@ function ButtonIcon({ isActive, handleSunmit, count, activeColor, iconPath }: Pr
 
   return (
     <button
-      className='flex items-center gap-1 transition-all duration-200 ease-in-out cursor-pointer group'
+      className='flex items-center gap-1 cursor-pointer group'
       onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation()
         e.preventDefault()

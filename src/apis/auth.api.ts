@@ -10,5 +10,8 @@ export const authApi = {
   },
   signIn(body: SignInFormData) {
     return http.post('/auth/sign-in', body)
+  },
+  logout(body: { refresh_token: string }) {
+    return http.post('/auth/logout', body)
   }
 }

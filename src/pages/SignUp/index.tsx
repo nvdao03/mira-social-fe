@@ -19,7 +19,7 @@ import { HTTP_STATUS } from '../../constants/httpStatus'
 type SignUpFormData = SignUpFormValues
 
 function SignUp() {
-  const { setIsauthenticated } = useContext(AppContext)
+  const { setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } = useContext(AppContext)
   const navigate = useNavigate()
 
   const {
@@ -40,9 +40,13 @@ function SignUp() {
 
   const handleSubmuitForm = handleSubmit((data: SignUpFormData) => {
     signUpMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (response) => {
         toast.success(MESSAGE.CREATE_ACCOUNT_SUCCESSFULLY)
         setIsauthenticated(true)
+        setRefreshToken(response.data.data.refresh_token)
+        setAvatar(response.data.data.user.avatar)
+        setUsername(response.data.data.user.username)
+        setName(response.data.data.user.name)
         navigate(PATH.HOME)
       },
       onError: (error: any) => {
@@ -103,7 +107,7 @@ function SignUp() {
                 </label>
                 <InputAuth
                   id='email'
-                  classNameInput='py-3 px-3 w-full bg-white border border-[#d1d9e0] border-solid rounded-[5px] focus:outline-none focus:border-[#4493F8] focus:ring-1 focus:ring-[#4493F8] mt-2 placeholder:text-[#CCCCC] text-[14px]'
+                  classNameInput='bg-transparent text-black py-3 px-3 w-full bg-white border border-[#d1d9e0] border-solid rounded-[5px] focus:outline-none focus:border-[#4493F8] focus:ring-1 focus:ring-[#4493F8] mt-2 placeholder:text-[#CCCCC] text-[14px]'
                   type='text'
                   placeholder='Email'
                   classNameError='text-red-500 text-left text-[13px] mt-2 flex items-center gap-x-2'
@@ -118,7 +122,7 @@ function SignUp() {
                 </label>
                 <InputAuth
                   id='password'
-                  classNameInput='py-3 px-3 w-full bg-white border border-[#d1d9e0] border-solid rounded-[5px] focus:outline-none focus:border-[#4493F8] focus:ring-1 focus:ring-[#4493F8] mt-2 placeholder:text-[#CCCCC] text-[14px]'
+                  classNameInput='text-black py-3 px-3 w-full bg-white border border-[#d1d9e0] border-solid rounded-[5px] focus:outline-none focus:border-[#4493F8] focus:ring-1 focus:ring-[#4493F8] mt-2 placeholder:text-[#CCCCC] text-[14px]'
                   type='password'
                   placeholder='Password'
                   classNameError='text-red-500 text-left text-[13px] mt-2 flex items-center gap-x-2'
@@ -133,7 +137,7 @@ function SignUp() {
                 </label>
                 <InputAuth
                   id='username'
-                  classNameInput='py-3 px-3 w-full bg-white border border-[#d1d9e0] border-solid rounded-[5px] focus:outline-none focus:border-[#4493F8] focus:ring-1 focus:ring-[#4493F8] mt-2 placeholder:text-[#CCCCC] text-[14px]'
+                  classNameInput='text-black py-3 px-3 w-full bg-white border border-[#d1d9e0] border-solid rounded-[5px] focus:outline-none focus:border-[#4493F8] focus:ring-1 focus:ring-[#4493F8] mt-2 placeholder:text-[#CCCCC] text-[14px]'
                   type='username'
                   placeholder='Username'
                   classNameError='text-red-500 text-left text-[13px] mt-2 flex items-center gap-x-2'
@@ -147,7 +151,7 @@ function SignUp() {
                 <div>
                   <select
                     {...register('country')}
-                    className='text-[14px] py-3 px-3 w-full bg-white border border-[#d1d9e0] border-solid rounded-[5px] focus:outline-none focus:border-[#4493F8] focus:ring-1 focus:ring-[#25292E] mt-2 placeholder:text-[#CCCCC] cursor-pointer'
+                    className='text-black text-[14px] py-3 px-3 w-full bg-white border border-[#d1d9e0] border-solid rounded-[5px] focus:outline-none focus:border-[#4493F8] focus:ring-1 mt-2 placeholder:text-[#CCCCC] cursor-pointer'
                   >
                     {countrys.sort().map((country, index) => (
                       <option key={index} value={country.name}>

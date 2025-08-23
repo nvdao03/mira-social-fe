@@ -21,3 +21,39 @@ export const getRefreshTokenFromLocalStorage = () => {
 export const removeRefreshTokenFromLocalStorage = () => {
   localStorage.removeItem('refresh_token')
 }
+
+export const saveAvatarFromLocalStorage = (avatar: string) => {
+  localStorage.setItem('avatar', avatar)
+}
+
+export const getAvatarFromLocalStorage = () => {
+  return localStorage.getItem('avatar') || ''
+}
+
+export const removeAvatarFromLocalStorage = () => {
+  localStorage.removeItem('avatar')
+}
+
+export const saveUsernameFromLocalStorage = (username: string) => {
+  localStorage.setItem('username', username)
+}
+
+export const getUsernameFromLocalStorage = () => {
+  return localStorage.getItem('username') || ''
+}
+
+export const removeUsernameFromLocalStorage = () => {
+  localStorage.removeItem('username')
+}
+
+export const saveNameFromLocalStorage = (name: string) => {
+  return localStorage.setItem('name', name)
+}
+
+export const getNameFromLocalStorage = () => {
+  return localStorage.getItem('name') || ''
+}
+
+export const removeNameFromLocalStorage = () => {
+  localStorage.removeItem('name')
+}
