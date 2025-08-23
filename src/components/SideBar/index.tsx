@@ -36,7 +36,7 @@ function SideBar() {
   }
 
   return (
-    <aside className='hidden md:flex md:flex-col md:items-start items-center w-20 lg:w-64 border-solid border-r border-[#2E3235] p-4 sticky top-0 h-screen'>
+    <aside className='hidden items-center w-20 lg:w-64 border-solid border-r border-[#2E3235] p-4 sticky top-0 h-screen md:flex md:flex-col lg:items-start'>
       <Link to={PATH.HOME} className='mb-8 lg:mb-6 lg:ml-3'>
         <img src={Logo} className='w-[37px] h-[37px]' alt='logo' />
       </Link>
@@ -87,7 +87,7 @@ function SideBar() {
             <span className='text-[#71767B] text-xs'>@{username}</span>
           </div>
         </div>
-        <div className='absolute bottom-[100%] left-0 z-50 hidden w-60 rounded-lg bg-black text-white group-hover:block transition-all duration-200 ease-in-out shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)]'>
+        <div className='absolute bottom-[100%] left-0 z-50 w-60 rounded-lg hidden bg-black text-white lg:group-hover:block transition-all duration-200 ease-in-out shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)]'>
           <div className='text-sm'>
             <button
               onClick={handleLogout}
