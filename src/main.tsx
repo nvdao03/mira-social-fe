@@ -6,7 +6,14 @@ import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import { AppProvider } from './contexts/app.context.tsx'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 0
+    }
+  }
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

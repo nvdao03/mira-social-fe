@@ -3,84 +3,40 @@ import { Link, useNavigate } from 'react-router-dom'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import FileImage from '../../assets/icons/file-image.svg'
 import FileVideo from '../../assets/icons/file-video.svg'
-import type { PostType } from '../../types/post.type'
-import Post from '../../components/Post'
 import Logo from '../../assets/imgs/logo.png'
 import { AppContext } from '../../contexts/app.context'
 import { PATH } from '../../constants/path'
 import { sidebars } from '../../data/sidebars'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
-
-const posts: PostType[] = [
-  {
-    _id: '1',
-    avatar: 'https://i.pravatar.cc/100?img=11',
-    name: 'Alice',
-    username: 'alice123',
-    content: 'Hello world! Đây là bài post có 1 ảnh.',
-    medias: [],
-    likes: 120,
-    comments: 15,
-    reposts: 10,
-    views: 2000,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    _id: '2',
-    avatar: 'https://i.pravatar.cc/100?img=12',
-    name: 'Bob',
-    username: 'bob_dev',
-    content: 'Test multiple images (4 ảnh như Twitter).',
-    medias: [
-      {
-        url: 'https://images.unsplash.com/photo-1755530603707-045e3306e4df?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0fHx8ZW58MHx8fHx8',
-        type: 0
-      },
-      {
-        url: 'https://images.unsplash.com/photo-1755572209935-4f7600b6294b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw4fHx8ZW58MHx8fHx8',
-        type: 0
-      },
-      {
-        url: 'https://plus.unsplash.com/premium_photo-1755552389190-4ef716bc24a0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw5fHx8ZW58MHx8fHx8',
-        type: 0
-      },
-      {
-        url: 'https://plus.unsplash.com/premium_photo-1755598865800-917a510fd9a0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxN3x8fGVufDB8fHx8fA%3D%3D',
-        type: 0
-      }
-    ],
-    likes: 330,
-    comments: 45,
-    reposts: 20,
-    views: 5500,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    _id: '3',
-    avatar: 'https://i.pravatar.cc/100?img=13',
-    name: 'Charlie',
-    username: 'charlie_music',
-    content: 'Đây là bài post có video.',
-    medias: [{ url: 'https://www.w3schools.com/html/mov_bbb.mp4', type: 1 }],
-    likes: 800,
-    comments: 120,
-    reposts: 55,
-    views: 20000,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-]
+import type { QueryConfig } from '../../configs/query.config'
+import useQueryParam from '../../hooks/useQueryParam'
+import postApi from '../../apis/post.api'
+import Post from '../../components/Post'
+import type { PostType } from '../../types/post.type'
 
 function Home() {
-  const [path, setPath] = useState<string>(PATH.HOME)
   const [isActive, setIsActive] = useState<string>('For you')
   const [openSidebar, setOpenSidebar] = useState(false)
+  const [path, setPath] = useState<string>(PATH.HOME)
+
   const navigate = useNavigate()
+
   const { avatar, name, username, refreshToken, setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } =
     useContext(AppContext)
+
+  const queryParams: QueryConfig = useQueryParam()
+  const queryConfig: QueryConfig = {
+    limit: queryParams.limit || 10,
+    page: queryParams.page || 1
+  }
+
+  const postListQuery = useQuery({
+    queryKey: ['posts', queryConfig],
+    queryFn: () => postApi.getPosts(queryConfig)
+  })
+
+  const { data } = postListQuery
 
   const logoutMutation = useMutation({
     mutationFn: (body: { refresh_token: string }) => authApi.logout(body)
@@ -236,9 +192,7 @@ function Home() {
       </div>
 
       {/* List Post */}
-      {posts.map((post, idx) => (
-        <Post key={idx} post={post} />
-      ))}
+      {data?.data.data.posts && data?.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} />)}
     </div>
   )
 }

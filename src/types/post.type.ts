@@ -5,17 +5,29 @@ export interface Media {
 
 export interface PostType {
   _id: string
-  avatar: string
-  name: string
-  username: string
   content: string | null
-  medias: Media[] | []
-  likes: number
-  comments: number
-  reposts: number
+  medias:
+    | {
+        url: string
+        type: number
+        _id: string
+      }[]
+    | []
   views: number
   createdAt: string
   updatedAt: string
+  __v: number
+  users: {
+    _id: string
+    username: string
+    name: string
+    verify: number
+    avatar: string | ''
+  }
+  like_count: number
+  comment_count: number
+  bookmark_count: number
+  repost_count: number
 }
 
 export interface PostList {
