@@ -1,6 +1,16 @@
+import { useQuery } from '@tanstack/react-query'
 import UserCard from '../UserCard'
+import { userApi } from '../../apis/user.api'
+import type { UserSuggestion } from '../../types/user.type'
 
 function SideBarRight() {
+  const userSuggestionsQuery = useQuery({
+    queryKey: ['userSuggestions'],
+    queryFn: () => userApi.getUserSuggestions()
+  })
+
+  const { data } = userSuggestionsQuery
+
   return (
     <aside className='hidden lg:block w-[330px] px-4 pb-4 pt-[6px]'>
       <div className='sticky top-0 pt-[10px]'>
@@ -31,7 +41,8 @@ function SideBarRight() {
         <div className='bg-gray-900 rounded-xl p-4 bg-transparent border border-solid border-[#2E3235]'>
           <h2 className='font-bold mb-2 text-[20px]'>Who to follow</h2>
           <div className='flex flex-col mt-3'>
-            <UserCard />
+            {data?.data.data &&
+              data.data.data.slice(0, 5).map((user: UserSuggestion) => <UserCard key={user._id} user={user} />)}
           </div>
         </div>
       </div>
