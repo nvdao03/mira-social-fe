@@ -6,12 +6,14 @@ import { likeApi } from '../../apis/like.api'
 import { bookmarkApi } from '../../apis/bookmark.api'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import useToggleMutation from '../../hooks/useToggleMutation'
+import type { QueryClient } from '@tanstack/react-query'
 
 interface PropTypes {
   post: PostType
+  queryClient: QueryClient
 }
 
-function Post({ post }: PropTypes) {
+function Post({ post, queryClient }: PropTypes) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isActiveLike, setIsActiveLike] = useState(false)
   const [isActiveBookmark, setIsActiveBookmark] = useState(false)
@@ -20,8 +22,8 @@ function Post({ post }: PropTypes) {
   const [repostCount, setRepostCount] = useState(post.repost_count)
   const navigate = useNavigate()
 
-  const likeToggle = useToggleMutation(likeApi.like, likeApi.unlike)
-  const bookmarkToggle = useToggleMutation(bookmarkApi.bookmark, bookmarkApi.unbookmark)
+  const likeToggle = useToggleMutation(likeApi.like, likeApi.unlike, queryClient)
+  const bookmarkToggle = useToggleMutation(bookmarkApi.bookmark, bookmarkApi.unbookmark, queryClient)
 
   useEffect(() => {
     setIsActiveLike(!!post.isLiked) // !! Luôn trả về đúng giá trị gốc từ server trả về

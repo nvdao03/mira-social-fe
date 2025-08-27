@@ -1,19 +1,29 @@
-import { useMutation } from '@tanstack/react-query'
+import { QueryClient, useMutation } from '@tanstack/react-query'
 
 /**
  * Custom hook cho toggle mutation
  * @param actionFn hàm gọi API khi active = true
  * @param revertFn hàm gọi API khi active = false
+ * @param queryClient client react-query xử lý để call lại API
  **/
 function useToggleMutation(
   actionFn: (body: { post_id: string }) => Promise<any>,
-  revertFn: (post_id: string) => Promise<any>
+  revertFn: (post_id: string) => Promise<any>,
+  queryClient: QueryClient
 ) {
   const actionMutation = useMutation({
-    mutationFn: actionFn
+    mutationFn: actionFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
+    }
   })
   const revertMutation = useMutation({
-    mutationFn: revertFn
+    mutationFn: revertFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
+    }
   })
 
   const toggle = (body: { post_id: string }, isActive: boolean) => {

@@ -7,7 +7,7 @@ import Logo from '../../assets/imgs/logo.png'
 import { AppContext } from '../../contexts/app.context'
 import { PATH } from '../../constants/path'
 import { sidebars } from '../../data/sidebars'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
 import type { QueryConfig } from '../../configs/query.config'
 import useQueryParam from '../../hooks/useQueryParam'
@@ -31,9 +31,12 @@ function Home() {
     page: queryParams.page || 1
   }
 
+  const queryClient = useQueryClient()
+
   const postListQuery = useQuery({
     queryKey: ['posts', queryConfig],
-    queryFn: () => postApi.getPosts(queryConfig)
+    queryFn: () => postApi.getPosts(queryConfig),
+    keepPreviousData: true
   })
 
   const { data } = postListQuery
@@ -59,7 +62,7 @@ function Home() {
   }
 
   return (
-    <div className='relative pb-[6px]'>
+    <div className='relative pb-[45px] md:pb-[6px]'>
       {/* overlay */}
       {openSidebar && (
         <div
@@ -67,7 +70,7 @@ function Home() {
           onClick={() => setOpenSidebar(false)}
         ></div>
       )}
-      {/* sidebar */}
+      {/* sidebar on mobile */}
       <div
         className={`fixed top-0 left-0 h-full w-72 bg-black text-white z-50 transform transition-transform duration-300 ease-in-out ${
           openSidebar ? 'translate-x-0' : '-translate-x-full'
@@ -133,7 +136,7 @@ function Home() {
       <header className='sticky z-10 top-0 border-solid border-b border-[#2E3235] bg-black md:block'>
         <div className='items-center px-4 pt-3 flex md:hidden'>
           <div className='w-[32px] h-[32px] md:hidden cursor-pointer' onClick={() => setOpenSidebar(true)}>
-            <img src={avatar || AvatarDefault} alt='avatar' className='w-full h-full rounded-full' />
+            <img src={avatar ? avatar : AvatarDefault} alt='avatar' className='w-full h-full rounded-full' />
           </div>
           <Link to={PATH.HOME} className='mx-auto'>
             <img src={Logo} alt='logo' className='w-[30px] h-[30]' />
@@ -162,7 +165,7 @@ function Home() {
       <div className='px-4 py-3 border-b border-solid border-[#2E3235]'>
         <div className='flex gap-x-3'>
           <div className='w-10 h-10 hidden md:block'>
-            <img src={AvatarDefault} alt='avatar' className=' w-full h-full object-center rounded-full' />
+            <img src={avatar || AvatarDefault} alt='avatar' className=' w-full h-full object-cover rounded-full' />
           </div>
           <form className='flex-1' encType='multipart/form-data' method='post'>
             <textarea
@@ -192,7 +195,8 @@ function Home() {
       </div>
 
       {/* List Post */}
-      {data?.data.data.posts && data?.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} />)}
+      {data?.data.data.posts &&
+        data?.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} queryClient={queryClient} />)}
     </div>
   )
 }

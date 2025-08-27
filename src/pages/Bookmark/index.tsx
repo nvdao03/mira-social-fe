@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { PATH } from '../../constants/path'
 import useQueryParam from '../../hooks/useQueryParam'
 import type { QueryConfig } from '../../configs/query.config'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { bookmarkApi } from '../../apis/bookmark.api'
 import type { PostType } from '../../types/post.type'
 import Post from '../../components/Post'
@@ -14,15 +14,18 @@ function Bookmark() {
     page: queryParams.page || 1
   }
 
+  const queryClient = useQueryClient()
+
   const bookmarkQuery = useQuery({
     queryKey: ['bookmarks', queryConfig],
-    queryFn: () => bookmarkApi.getBookmarks(queryConfig)
+    queryFn: () => bookmarkApi.getBookmarks(queryConfig),
+    keepPreviousData: true
   })
 
   const { data } = bookmarkQuery
 
   return (
-    <div className='pb-[5px]'>
+    <div className='pb-[45px] md:pb-[5px]'>
       {/* Header */}
       <div className='px-4 pt-2 pb-2 flex items-center border-b border-solid border-[#2E3235]'>
         <Link to={PATH.HOME} className='py-3 pr-3'>
@@ -35,7 +38,13 @@ function Bookmark() {
         <h3 className='text-color_auth text-[18px] font-semibold ml-3'>Bookmarks</h3>
       </div>
       {/* Posts */}
-      {data?.data.data.posts && data.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} />)}
+      {data?.data.data.posts.length === 0 && (
+        <h3 className='absolute top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
+          No bookmarks
+        </h3>
+      )}
+      {data?.data.data.posts &&
+        data.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} queryClient={queryClient} />)}
     </div>
   )
 }
