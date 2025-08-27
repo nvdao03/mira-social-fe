@@ -13,7 +13,7 @@ function ButtonIcon({ isActive, handleSunmit, count, activeColor, iconPath }: Pr
 
   return (
     <button
-      className='flex items-center gap-1 cursor-pointer group'
+      className='flex items-center gap-1 cursor-pointer group pt-3 pb-3'
       onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation()
         e.preventDefault()
@@ -25,7 +25,7 @@ function ButtonIcon({ isActive, handleSunmit, count, activeColor, iconPath }: Pr
       <svg
         viewBox='0 0 24 24'
         aria-hidden='true'
-        className={`text-[#71767b] h-[18px] w-[18px]`}
+        className={`text-[#71767b] h-5 w-5`}
         style={{
           // Nếu isActiver = true thì màu là activeColor hoặc hovered = true thì màu là activeColor và ngược lại ko cái nào bằng true thì là màu mặc định #71767b
           fill: isActive ? activeColor : hovered ? activeColor : '#71767b'
