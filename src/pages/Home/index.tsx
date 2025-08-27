@@ -59,7 +59,7 @@ function Home() {
   }
 
   return (
-    <div className='relative'>
+    <div className='relative pb-[6px]'>
       {/* overlay */}
       {openSidebar && (
         <div

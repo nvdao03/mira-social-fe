@@ -28,6 +28,8 @@ export interface PostType {
   comment_count: number
   bookmark_count: number
   repost_count: number
+  isLiked?: boolean
+  isBookmarked?: boolean
 }
 
 export interface PostList {

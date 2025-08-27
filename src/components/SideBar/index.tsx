@@ -1,18 +1,18 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import Logo from '../../assets/imgs/logo.png'
 import { PATH } from '../../constants/path'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { sidebars } from '../../data/sidebars'
 import { AppContext } from '../../contexts/app.context'
 import { useMutation } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
 
 function SideBar() {
-  const [path, setPath] = useState<string>(PATH.HOME)
   const { avatar, name, username, refreshToken, setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } =
     useContext(AppContext)
 
+  const location = useLocation()
   const navigate = useNavigate()
 
   const logoutMutation = useMutation({
@@ -45,14 +45,13 @@ function SideBar() {
           <Link
             to={sidebar.path}
             key={sidebar.id}
-            onClick={() => setPath(sidebar.path)}
-            className={`flex items-center space-x-3 hover:bg-[#E7E9EA1A] rounded-full lg:px-3 lg:py-2 ${sidebar.path === path ? 'text-[#1d9bf0] font-semibold' : ''}`}
+            className={`flex items-center space-x-3 hover:bg-[#E7E9EA1A] rounded-full lg:px-3 lg:py-2 ${sidebar.path === location.pathname ? 'text-[#1d9bf0] font-semibold' : ''}`}
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 640 640'
               fill='none'
-              stroke={sidebar.path === path ? '#1d9bf0' : '#FFFFFF'}
+              stroke={sidebar.path === location.pathname ? '#1d9bf0' : '#FFFFFF'}
               strokeWidth={40}
               className='w-7 h-7'
             >

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { PostType } from '../../types/post.type'
 import { Link, useNavigate } from 'react-router-dom'
 import ButtonIcon from '../ButtonIcon'
@@ -15,14 +15,35 @@ function Post({ post }: PropTypes) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isActiveLike, setIsActiveLike] = useState(false)
   const [isActiveBookmark, setIsActiveBookmark] = useState(false)
+  const [likeCount, setLikeCount] = useState(post.like_count)
+  const [commentCount, setCommentCount] = useState(post.comment_count)
+  const [repostCount, setRepostCount] = useState(post.repost_count)
   const navigate = useNavigate()
 
   const likeToggle = useToggleMutation(likeApi.like, likeApi.unlike)
   const bookmarkToggle = useToggleMutation(bookmarkApi.bookmark, bookmarkApi.unbookmark)
 
+  useEffect(() => {
+    setIsActiveLike(!!post.isLiked) // !! Luôn trả về đúng giá trị gốc từ server trả về
+    setLikeCount(post.like_count)
+  }, [post.isLiked, post.like_count])
+
+  useEffect(() => {
+    setIsActiveBookmark(!!post.isBookmarked)
+  }, [post.isBookmarked])
+
+  useEffect(() => {
+    setCommentCount(post.comment_count)
+  }, [post.comment_count])
+
+  useEffect(() => {
+    setRepostCount(post.repost_count)
+  }, [post.repost_count])
+
   const handleLike = (body: { post_id: string }) => {
     likeToggle.toggle(body, isActiveLike)
     setIsActiveLike(!isActiveLike)
+    setLikeCount(isActiveLike ? likeCount - 1 : likeCount + 1)
   }
 
   const handleBookmark = (body: { post_id: string }) => {
@@ -120,12 +141,12 @@ function Post({ post }: PropTypes) {
         )}
         <div className='flex justify-between text-[#71767B] text-[13px]'>
           <ButtonIcon
-            count={isActiveLike ? post.like_count + 1 : post.like_count}
+            count={likeCount}
             activeColor='#F91880'
             iconPath={
-              !isActiveLike
-                ? 'M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z'
-                : 'M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z'
+              isActiveLike
+                ? 'M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z'
+                : 'M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z'
             }
             isActive={isActiveLike}
             handleSunmit={() => handleLike({ post_id: post._id.toString() })}
@@ -144,12 +165,12 @@ function Post({ post }: PropTypes) {
                 <path d='M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z'></path>
               </g>
             </svg>
-            <span>{post.comment_count}</span>
+            <span>{commentCount}</span>
           </Link>
           <ButtonIcon
             activeColor='#22C55E'
             iconPath='M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z'
-            count={post.repost_count}
+            count={repostCount}
           />
           <ButtonIcon
             activeColor='#1D9BF0'
