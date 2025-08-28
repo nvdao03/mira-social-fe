@@ -27,7 +27,7 @@ function Bookmark() {
   return (
     <div className='pb-[45px] md:pb-[5px]'>
       {/* Header */}
-      <div className='px-4 pt-2 pb-2 flex items-center border-b border-solid border-[#2E3235]'>
+      <div className='px-4 pt-2 pb-2 flex items-center border-b border-solid border-[#2E3235] sticky top-0 left-0 right-0 bg-black z-20'>
         <Link to={PATH.HOME} className='py-3 pr-3'>
           <svg viewBox='0 0 24 24' aria-hidden='true' className='inline-block h-5 w-5' fill='#eff3f4'>
             <g>
@@ -43,8 +43,13 @@ function Bookmark() {
           No bookmarks
         </h3>
       )}
-      {data?.data.data.posts &&
-        data.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} queryClient={queryClient} />)}
+      {data?.data.data.posts && (
+        <div className=''>
+          {data.data.data.posts.map((post: PostType) => (
+            <Post key={post._id} post={post} queryClient={queryClient} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

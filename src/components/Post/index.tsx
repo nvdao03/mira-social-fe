@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import type { PostType } from '../../types/post.type'
 import { Link, useNavigate } from 'react-router-dom'
 import ButtonIcon from '../ButtonIcon'
@@ -7,6 +7,8 @@ import { bookmarkApi } from '../../apis/bookmark.api'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import useToggleMutation from '../../hooks/useToggleMutation'
 import type { QueryClient } from '@tanstack/react-query'
+import { AppContext } from '../../contexts/app.context'
+import { PATH } from '../../constants/path'
 
 interface PropTypes {
   post: PostType
@@ -14,6 +16,8 @@ interface PropTypes {
 }
 
 function Post({ post, queryClient }: PropTypes) {
+  const { username } = useContext(AppContext)
+
   const [isPlaying, setIsPlaying] = useState(false)
   const [isActiveLike, setIsActiveLike] = useState(false)
   const [isActiveBookmark, setIsActiveBookmark] = useState(false)
@@ -56,6 +60,7 @@ function Post({ post, queryClient }: PropTypes) {
   // Lấy ra giá trị từ response trả về
   const images = post.medias.filter((item) => item.type === 0)
   const videos = post.medias.filter((item) => item.type === 1)
+  const isMyProfile = username === post.users.username
 
   return (
     <div
@@ -63,7 +68,7 @@ function Post({ post, queryClient }: PropTypes) {
       className='flex gap-3 px-4 pt-3 hover:bg-[#080808] transition border-b border-solid border-[#2E3235] cursor-pointer'
     >
       <Link
-        to={`/${post.users.username}`}
+        to={isMyProfile ? PATH.PROFILE : PATH.USER_PROFILE.replace(':username', post.users.username)}
         className='flex-shrink-0'
         onClick={(e) => {
           e.stopPropagation()
@@ -77,7 +82,7 @@ function Post({ post, queryClient }: PropTypes) {
       </Link>
       <div className='flex-1'>
         <Link
-          to={`/${post.users.username}`}
+          to={isMyProfile ? PATH.PROFILE : PATH.USER_PROFILE.replace(':username', post.users.username)}
           onClick={(e) => {
             e.stopPropagation()
           }}
