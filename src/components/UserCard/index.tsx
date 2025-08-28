@@ -1,23 +1,14 @@
 import { Link } from 'react-router-dom'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import type { UserSuggestion } from '../../types/user.type'
-import { PATH } from '../../constants/path'
-import { useContext } from 'react'
-import { AppContext } from '../../contexts/app.context'
 
 interface PropTypes {
   user: UserSuggestion
 }
 
 function UserCard({ user }: PropTypes) {
-  const { username } = useContext(AppContext)
-  const isMyProfile = username === user.username
-
   return (
-    <Link
-      to={isMyProfile ? PATH.PROFILE : PATH.USER_PROFILE.replace(':username', user.username)}
-      className='flex items-center justify-between py-4'
-    >
+    <Link to={`/${user._id}`} className='flex items-center justify-between py-4'>
       <div className='flex gap-x-3'>
         <div className='w-10 h-10 rounded-full'>
           <img src={user.avatar || AvatarDefault} alt={user.name} className='w-full h-full object-cover rounded-full' />

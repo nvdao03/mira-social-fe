@@ -19,7 +19,7 @@ import { HTTP_STATUS } from '../../constants/httpStatus'
 type SignUpFormData = SignUpFormValues
 
 function SignUp() {
-  const { setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } = useContext(AppContext)
+  const { setId, setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } = useContext(AppContext)
   const navigate = useNavigate()
 
   const {
@@ -47,6 +47,7 @@ function SignUp() {
         setAvatar(response.data.data.user.avatar)
         setUsername(response.data.data.user.username)
         setName(response.data.data.user.name)
+        setId(response.data.data.user._id)
         navigate(PATH.HOME)
       },
       onError: (error: any) => {

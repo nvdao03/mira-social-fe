@@ -4,12 +4,10 @@ import type { QueryConfig } from '../../configs/query.config'
 import useQueryParam from '../../hooks/useQueryParam'
 import type { PostType } from '../../types/post.type'
 import Post from '../Post'
+import { useParams } from 'react-router-dom'
 
-interface PropTypes {
-  username: string
-}
-
-function ProfileLike({ username }: PropTypes) {
+function ProfileLike() {
+  const params = useParams()
   const queryParams: QueryConfig = useQueryParam()
   const queryConfig: QueryConfig = {
     limit: queryParams.limit || 10,
@@ -19,8 +17,8 @@ function ProfileLike({ username }: PropTypes) {
   const queryClient = useQueryClient()
 
   const postsUserQuery = useQuery({
-    queryKey: ['postsUserLike'],
-    queryFn: () => userApi.getPostsUserLike(username, queryConfig),
+    queryKey: ['profile_like_posts', params.user_id],
+    queryFn: () => userApi.getLikePostsProfile(params.user_id as string, queryConfig),
     keepPreviousData: true
   })
 

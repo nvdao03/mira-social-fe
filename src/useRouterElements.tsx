@@ -35,14 +35,6 @@ function useRouterElements() {
           )
         },
         {
-          path: PATH.PROFILE,
-          element: (
-            <MainLayout>
-              <Profile />
-            </MainLayout>
-          )
-        },
-        {
           path: PATH.BOOKMARK,
           element: (
             <MainLayout>
@@ -57,9 +49,18 @@ function useRouterElements() {
               <Setting />
             </MainLayout>
           )
+        },
+        {
+          path: PATH.PROFILE,
+          element: (
+            <MainLayout>
+              <Profile />
+            </MainLayout>
+          )
         }
       ]
     },
+
     {
       element: <RejectedRoute />,
       children: [

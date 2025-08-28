@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import Logo from '../../assets/imgs/logo.png'
 import { PATH } from '../../constants/path'
@@ -9,10 +9,22 @@ import { useMutation } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
 
 function SideBar() {
-  const { avatar, name, username, refreshToken, setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } =
-    useContext(AppContext)
+  const {
+    id,
+    avatar,
+    name,
+    username,
+    refreshToken,
+    setId,
+    setIsauthenticated,
+    setRefreshToken,
+    setAvatar,
+    setUsername,
+    setName
+  } = useContext(AppContext)
 
   const location = useLocation()
+  const params = useParams()
   const navigate = useNavigate()
 
   const logoutMutation = useMutation({
@@ -29,6 +41,7 @@ function SideBar() {
           setAvatar('')
           setUsername('')
           setName('')
+          setId('')
           navigate(PATH.SIGN_IN)
         }
       }
@@ -43,15 +56,23 @@ function SideBar() {
       <nav className='space-y-7 lg:space-y-4'>
         {sidebars.map((sidebar) => (
           <Link
-            to={sidebar.path}
+            to={sidebar.path === PATH.PROFILE ? `/${id}` : sidebar.path}
             key={sidebar.id}
-            className={`flex items-center space-x-3 hover:bg-[#E7E9EA1A] rounded-full lg:px-3 lg:py-2 ${sidebar.path === location.pathname ? 'text-[#1d9bf0] font-semibold' : ''}`}
+            className={`flex items-center space-x-3 hover:bg-[#E7E9EA1A] rounded-full lg:px-3 lg:py-2 ${
+              (sidebar.path === PATH.PROFILE ? params.user_id === id : sidebar.path === location.pathname)
+                ? 'text-[#1d9bf0] font-semibold'
+                : ''
+            }`}
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 640 640'
               fill='none'
-              stroke={sidebar.path === location.pathname ? '#1d9bf0' : '#FFFFFF'}
+              stroke={
+                (sidebar.path === PATH.PROFILE ? params.user_id === id : sidebar.path === location.pathname)
+                  ? '#1d9bf0'
+                  : '#FFFFFF'
+              }
               strokeWidth={40}
               className='w-7 h-7'
             >

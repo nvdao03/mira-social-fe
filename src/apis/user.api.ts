@@ -2,16 +2,21 @@ import type { QueryConfig } from '../configs/query.config'
 import http from '../utils/http'
 
 export const userApi = {
-  getUserSuggestions: () => {
-    return http.get('/users/suggestions')
+  getUserSuggestions: (query: QueryConfig) => {
+    return http.get('/users/suggestions', {
+      params: query
+    })
   },
-  getProfile: () => {
-    return http.get(`/users/profile/me`)
+  getProfile: (user_id: string) => {
+    return http.get(`/users/${user_id}`)
   },
-  getPostsUser(username: string, query: QueryConfig) {
-    return http.get(`/users/${username}/posts`, { params: query })
+  getPostsProfile(user_id: string, query: QueryConfig) {
+    return http.get(`/users/${user_id}/posts`, { params: query })
   },
-  getPostsUserLike(username: string, query: QueryConfig) {
-    return http.get(`/users/${username}/likes`, { params: query })
+  getLikePostsProfile(user_id: string, query: QueryConfig) {
+    return http.get(`/users/${user_id}/likes`, { params: query })
+  },
+  getRepostsProfile(user_id: string, query: QueryConfig) {
+    return http.get(`/users/${user_id}/reposts`, { params: query })
   }
 }

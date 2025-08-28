@@ -1,24 +1,23 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { PATH } from '../../constants/path'
 import { useQuery } from '@tanstack/react-query'
 import { userApi } from '../../apis/user.api'
 import type { ProfileType } from '../../types/user.type'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
-import { useContext, useState } from 'react'
-import { AppContext } from '../../contexts/app.context'
 import { tabListPofile } from '../../data/tabListPofile'
 import ProfileReposts from '../../components/ProfileReposts'
 import ProfileLike from '../../components/ProfileLike'
 import ProfilePosts from '../../components/ProfilePosts'
+import { useState } from 'react'
 
 function Profile() {
-  const { avatar, name, username } = useContext(AppContext)
-
   const [isActiveTab, setIsActiveTab] = useState<string>('Posts')
+  const params = useParams()
 
   const getProfileQuery = useQuery({
-    queryKey: ['profile'],
-    queryFn: () => userApi.getProfile()
+    queryKey: ['profile', params.user_id],
+    queryFn: () => userApi.getProfile(params.user_id as string),
+    keepPreviousData: true
   })
 
   return (
@@ -41,7 +40,7 @@ function Profile() {
             <div>
               <div className='relative w-full h-[140px] md:h-[200px] bg-[#333639]'>
                 <div className='absolute bottom-0 left-4 translate-y-1/2 w-[94px] h-[94px] md:w-[133px] md:h-[133px] rounded-full bg-slate-400'>
-                  <img className='w-full h-full object-cover rounded-full' src={avatar || AvatarDefault} alt='' />
+                  <img className='w-full h-full object-cover rounded-full' src={user.avatar || AvatarDefault} alt='' />
                 </div>
               </div>
               <div className='pt-3 px-4 w-full'>
@@ -55,7 +54,7 @@ function Profile() {
                 </div>
                 <div className='mt-4 md:mt-8'>
                   <div className='flex items-center gap-x-3'>
-                    <h3 className='font-semibold text-color_auth text-[20px]'>{name}</h3>
+                    <h3 className='font-semibold text-color_auth text-[20px]'>{user.name}</h3>
                     {user.verify === 1 && (
                       <div className='flex items-center gap-2 px-2 py-[4px] border border-solid border-[#536471] rounded-full'>
                         <svg
@@ -74,7 +73,7 @@ function Profile() {
                       </div>
                     )}
                   </div>
-                  <p className='text-[#71767B] text-[15px] font-semibold mt-1'>@{username}</p>
+                  <p className='text-[#71767B] text-[15px] font-semibold mt-1'>@{user.username}</p>
                   <div className='mt-3 flex flex-col gap-[10px]'>
                     {user.bio && (
                       <div className='w-full leading-[1.5]'>
@@ -161,9 +160,8 @@ function Profile() {
               </div>
               {/* Content */}
               <div>
-                {isActiveTab === 'Posts' && <ProfilePosts username={user.username} />}
-                {isActiveTab === 'Reposts' && <ProfileReposts />}
-                {isActiveTab === 'Likes' && <ProfileLike username={user.username} />}
+                {isActiveTab === 'Posts' && <ProfilePosts />}
+                {isActiveTab === 'Likes' && <ProfileLike />}
               </div>
             </div>
           </>

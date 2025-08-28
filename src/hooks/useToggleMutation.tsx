@@ -14,19 +14,13 @@ function useToggleMutation(
   const actionMutation = useMutation({
     mutationFn: actionFn,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] })
       queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
-      queryClient.invalidateQueries({ queryKey: ['postsUser'] })
-      queryClient.invalidateQueries({ queryKey: ['postsUserLike'] })
     }
   })
   const revertMutation = useMutation({
     mutationFn: revertFn,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] })
       queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
-      queryClient.invalidateQueries({ queryKey: ['postsUser'] })
-      queryClient.invalidateQueries({ queryKey: ['postsUserLike'] })
     }
   })
 

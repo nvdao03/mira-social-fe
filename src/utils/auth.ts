@@ -57,3 +57,15 @@ export const getNameFromLocalStorage = () => {
 export const removeNameFromLocalStorage = () => {
   localStorage.removeItem('name')
 }
+
+export const saveIdFromLocalStorage = (id: string) => {
+  return localStorage.setItem('id', id)
+}
+
+export const getIdFromLocalStorage = () => {
+  return localStorage.getItem('id') || ''
+}
+
+export const removeIdFromLocalStorage = () => {
+  localStorage.removeItem('id')
+}

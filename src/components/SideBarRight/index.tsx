@@ -1,15 +1,28 @@
 import { useQuery } from '@tanstack/react-query'
 import UserCard from '../UserCard'
 import { userApi } from '../../apis/user.api'
-import type { UserSuggestion } from '../../types/user.type'
+import type { QueryConfig } from '../../configs/query.config'
+import useQueryParam from '../../hooks/useQueryParam'
+import { useParams } from 'react-router-dom'
 
 function SideBarRight() {
+  const params = useParams()
+
+  const queryParams: QueryConfig = useQueryParam()
+  const queryConfig: QueryConfig = {
+    limit: queryParams.limit || 5,
+    page: queryParams.page || 1
+  }
+
   const userSuggestionsQuery = useQuery({
-    queryKey: ['userSuggestions'],
-    queryFn: () => userApi.getUserSuggestions()
+    queryKey: ['user_not_follow_suggestions', params.user_id],
+    queryFn: () => userApi.getUserSuggestions(queryConfig)
   })
 
   const { data } = userSuggestionsQuery
+
+  console.log(data?.data.data.users[0].unfollowed_users.name)
+  console.log(data)
 
   return (
     <aside className='hidden lg:block w-[330px] px-4 pb-4 pt-[6px]'>
@@ -41,8 +54,10 @@ function SideBarRight() {
         <div className='bg-gray-900 rounded-xl p-4 bg-transparent border border-solid border-[#2E3235]'>
           <h2 className='font-bold mb-2 text-[20px]'>Who to follow</h2>
           <div className='flex flex-col mt-3'>
-            {data?.data.data &&
-              data.data.data.slice(0, 5).map((user: UserSuggestion) => <UserCard key={user._id} user={user} />)}
+            {data?.data.data.users &&
+              data?.data.data.users.map((user: any) => (
+                <UserCard key={user.unfollowed_users._id} user={user.unfollowed_users} />
+              ))}
           </div>
         </div>
       </div>

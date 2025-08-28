@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { PostType } from '../../types/post.type'
 import { Link, useNavigate } from 'react-router-dom'
 import ButtonIcon from '../ButtonIcon'
@@ -7,8 +7,6 @@ import { bookmarkApi } from '../../apis/bookmark.api'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import useToggleMutation from '../../hooks/useToggleMutation'
 import type { QueryClient } from '@tanstack/react-query'
-import { AppContext } from '../../contexts/app.context'
-import { PATH } from '../../constants/path'
 
 interface PropTypes {
   post: PostType
@@ -16,8 +14,6 @@ interface PropTypes {
 }
 
 function Post({ post, queryClient }: PropTypes) {
-  const { username } = useContext(AppContext)
-
   const [isPlaying, setIsPlaying] = useState(false)
   const [isActiveLike, setIsActiveLike] = useState(false)
   const [isActiveBookmark, setIsActiveBookmark] = useState(false)
@@ -60,15 +56,14 @@ function Post({ post, queryClient }: PropTypes) {
   // Lấy ra giá trị từ response trả về
   const images = post.medias.filter((item) => item.type === 0)
   const videos = post.medias.filter((item) => item.type === 1)
-  const isMyProfile = username === post.users.username
 
   return (
     <div
-      onClick={() => navigate(`/posts/${post._id}`)}
+      onClick={() => navigate(`/${post.users.username}/${post._id}`)}
       className='flex gap-3 px-4 pt-3 hover:bg-[#080808] transition border-b border-solid border-[#2E3235] cursor-pointer'
     >
       <Link
-        to={isMyProfile ? PATH.PROFILE : PATH.USER_PROFILE.replace(':username', post.users.username)}
+        to={`/${post.users._id.toString()}`}
         className='flex-shrink-0'
         onClick={(e) => {
           e.stopPropagation()
@@ -82,7 +77,7 @@ function Post({ post, queryClient }: PropTypes) {
       </Link>
       <div className='flex-1'>
         <Link
-          to={isMyProfile ? PATH.PROFILE : PATH.USER_PROFILE.replace(':username', post.users.username)}
+          to={`/${post.users._id.toString()}`}
           onClick={(e) => {
             e.stopPropagation()
           }}
@@ -174,11 +169,6 @@ function Post({ post, queryClient }: PropTypes) {
             </svg>
             <span>{commentCount}</span>
           </Link>
-          <ButtonIcon
-            activeColor='#22C55E'
-            iconPath='M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z'
-            count={repostCount}
-          />
           <ButtonIcon
             activeColor='#1D9BF0'
             iconPath='M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z'

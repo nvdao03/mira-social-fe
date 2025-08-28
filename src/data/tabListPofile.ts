@@ -5,10 +5,6 @@ export const tabListPofile = [
   },
   {
     id: 2,
-    name: 'Reposts'
-  },
-  {
-    id: 3,
     name: 'Likes'
   }
 ]

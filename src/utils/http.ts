@@ -3,16 +3,19 @@ import axios from 'axios'
 import {
   getAccessTokenFromLocalStorage,
   getAvatarFromLocalStorage,
+  getIdFromLocalStorage,
   getNameFromLocalStorage,
   getRefreshTokenFromLocalStorage,
   getUsernameFromLocalStorage,
   removeAccessTokenFromLocalStorage,
   removeAvatarFromLocalStorage,
+  removeIdFromLocalStorage,
   removeNameFromLocalStorage,
   removeRefreshTokenFromLocalStorage,
   removeUsernameFromLocalStorage,
   saveAccessTokenFromLocalStorage,
   saveAvatarFromLocalStorage,
+  saveIdFromLocalStorage,
   saveNameFromLocalStorage,
   saveRefreshTokenFromLocalStorage,
   saveUsernameFromLocalStorage
@@ -27,6 +30,7 @@ class Http {
   private avatar: string
   private username: string
   private name: string
+  private id: string
 
   constructor() {
     this.access_token = getAccessTokenFromLocalStorage()
@@ -34,6 +38,7 @@ class Http {
     this.avatar = getAvatarFromLocalStorage() || ''
     this.username = getUsernameFromLocalStorage()
     this.name = getNameFromLocalStorage()
+    this.id = getIdFromLocalStorage()
     this.instance = axios.create({
       baseURL: URL,
       timeout: 10000,
@@ -63,22 +68,26 @@ class Http {
           this.avatar = response.data.data.user.avatar || ''
           this.username = response.data.data.user.username
           this.name = response.data.data.user.name
+          this.id = response.data.data.user.id
           saveAccessTokenFromLocalStorage(this.access_token)
           saveRefreshTokenFromLocalStorage(this.refresh_token)
           saveAvatarFromLocalStorage(this.avatar)
           saveUsernameFromLocalStorage(this.username)
           saveNameFromLocalStorage(this.name)
+          saveIdFromLocalStorage(this.id)
         } else if (url === '/auth/logout') {
           this.access_token = ''
           this.refresh_token = ''
           this.name = ''
           this.avatar = ''
           this.username = ''
+          this.id = ''
           removeAccessTokenFromLocalStorage()
           removeRefreshTokenFromLocalStorage()
           removeAvatarFromLocalStorage()
           removeUsernameFromLocalStorage()
           removeNameFromLocalStorage()
+          removeIdFromLocalStorage()
         }
         return response
       },
