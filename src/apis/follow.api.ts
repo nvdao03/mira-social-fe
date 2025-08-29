@@ -3,7 +3,6 @@ import http from '../utils/http'
 
 export const followApi = {
   getFollowers: (user_id: string, param: QueryConfig) => {
-    console.log('user_id', user_id)
     return http.get(`/follows/${user_id}/followers`, {
       params: param
     })
@@ -13,6 +12,10 @@ export const followApi = {
       params: param
     })
   },
-  follow: (user_id: string) => `/follow/follow/${user_id}`,
-  unfollow: (user_id: string) => `/follow/unfollow/${user_id}`
+  follow: (body: { followed_user_id: string }) => {
+    return http.post('/follows', body)
+  },
+  unfollow: (followed_user_id: string) => {
+    return http.delete(`/follows/user/${followed_user_id}`)
+  }
 }

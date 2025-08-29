@@ -133,7 +133,8 @@ function Profile() {
                       onClick={() =>
                         navidate(`/${params.user_id}/follow`, {
                           state: {
-                            type: 'Followings'
+                            type: 'Followings',
+                            name: user.name
                           }
                         })
                       }
@@ -146,7 +147,8 @@ function Profile() {
                       onClick={() =>
                         navidate(`/${params.user_id}/follow`, {
                           state: {
-                            type: 'Followers'
+                            type: 'Followers',
+                            name: user.name
                           }
                         })
                       }

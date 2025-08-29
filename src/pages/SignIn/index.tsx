@@ -43,7 +43,7 @@ function SignIn() {
         setAvatar(response.data.data.user.avatar)
         setUsername(response.data.data.user.username)
         setName(response.data.data.user.name)
-        setId(response.data.data.user._id)
+        setId(response.data.data.user.id)
         navigate(PATH.HOME)
       },
       onError: (error: any) => {

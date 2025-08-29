@@ -8,9 +8,8 @@ function Follow() {
   const location = useLocation()
   const navidate = useNavigate()
   const type = location.state.type as string
+  const name = location.state.name as string
   const [isActiveTab, setIsActiveTab] = useState<string>(type)
-
-  console.log(type)
 
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
@@ -23,7 +22,7 @@ function Follow() {
             </g>
           </svg>
         </div>
-        <h3 className='text-color_auth text-[18px] font-semibold ml-3'>"HEHE</h3>
+        <h3 className='text-color_auth text-[18px] font-semibold ml-3'>{name}</h3>
       </div>
       {/* Tabs */}
       <div className='px-2 flex items-center justify-around gap-7 md:gap-[40px] lg:gap-[50px] border-b border-solid border-[#2E3235]'>

@@ -1,14 +1,36 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import type { UserSuggestion } from '../../types/user.type'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { followApi } from '../../apis/follow.api'
 
 interface PropTypes {
   user: UserSuggestion
 }
 
 function UserCard({ user }: PropTypes) {
+  const navidate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const followMutation = useMutation({
+    mutationFn: (body: { followed_user_id: string }) => {
+      return followApi.follow(body)
+    }
+  })
+
+  const handleFollow = (body: { followed_user_id: string }) => {
+    followMutation.mutate(body, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user_not_follow_suggestions'] })
+        queryClient.invalidateQueries({ queryKey: ['profile'] })
+        queryClient.invalidateQueries({ queryKey: ['followings'] })
+        queryClient.invalidateQueries({ queryKey: ['followers'] })
+      }
+    })
+  }
+
   return (
-    <Link to={`/${user._id}`} className='flex items-center justify-between py-4'>
+    <div onClick={() => navidate(`/${user._id}`)} className='flex items-center justify-between py-4'>
       <div className='flex gap-x-3'>
         <div className='w-10 h-10 rounded-full'>
           <img src={user.avatar || AvatarDefault} alt={user.name} className='w-full h-full object-cover rounded-full' />
@@ -39,12 +61,13 @@ function UserCard({ user }: PropTypes) {
       <button
         onClick={(e) => {
           e.stopPropagation()
+          handleFollow({ followed_user_id: user._id })
         }}
         className='border border-solid text-[#0F1419] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 hover:bg-opacity-90 transition-all duration-200 ease-in-out'
       >
         Follow
       </button>
-    </Link>
+    </div>
   )
 }
 
