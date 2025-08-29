@@ -1,12 +1,19 @@
-import { Link } from 'react-router-dom'
-import AvatarDefault from '../../assets/imgs/avatar-default.png'
-import type { UserSuggestion } from '../../types/user.type'
+import { Link, useParams } from 'react-router-dom'
+import AvatarDefault from '../../../../assets/imgs/avatar-default.png'
+import type { UserSuggestion } from '../../../../types/user.type'
+import { useContext } from 'react'
+import { AppContext } from '../../../../contexts/app.context'
 
 interface PropTypes {
   user: UserSuggestion
+  type: string
 }
 
-function UserCard({ user }: PropTypes) {
+function UserCardFollow({ user, type }: PropTypes) {
+  const { id } = useContext(AppContext)
+  const params = useParams()
+  const isUserFollowing = Boolean(params.user_id === id)
+
   return (
     <Link to={`/${user._id}`} className='flex items-center justify-between py-4'>
       <div className='flex gap-x-3'>
@@ -15,9 +22,7 @@ function UserCard({ user }: PropTypes) {
         </div>
         <div className='h-10 flex flex-col justify-center'>
           <div className='flex items-center'>
-            <span className={`hover:underline text-[15px] leading-[1.5] font-semibold truncate max-w-[100px]`}>
-              {user.name}
-            </span>
+            <span className={`hover:underline text-[15px] leading-[1.5] font-semibold w-full`}>{user.name}</span>
             {user.verify === 1 && (
               <svg
                 viewBox='0 0 22 22'
@@ -33,19 +38,31 @@ function UserCard({ user }: PropTypes) {
               </svg>
             )}
           </div>
-          <span className='text-[#71767B] text-[13px] truncate max-w-[100px] mt-1'>@{user.username}</span>
+          <span className='text-[#71767B] text-[13px] w-full mt-1'>@{user.username}</span>
         </div>
       </div>
-      <button
-        onClick={(e) => {
-          e.stopPropagation()
-        }}
-        className='border border-solid text-[#0F1419] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 hover:bg-opacity-90 transition-all duration-200 ease-in-out'
-      >
-        Follow
-      </button>
+      {isUserFollowing && type === 'Followings' && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
+          className='border border-solid text-[#0F1419] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 hover:bg-opacity-90 transition-all duration-200 ease-in-out'
+        >
+          Following
+        </button>
+      )}
+      {isUserFollowing && type === 'Followers' && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
+          className='border border-solid text-[#0F1419] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 hover:bg-opacity-90 transition-all duration-200 ease-in-out'
+        >
+          Follow back
+        </button>
+      )}
     </Link>
   )
 }
 
-export default UserCard
+export default UserCardFollow

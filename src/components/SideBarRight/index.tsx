@@ -21,9 +21,6 @@ function SideBarRight() {
 
   const { data } = userSuggestionsQuery
 
-  console.log(data?.data.data.users[0].unfollowed_users.name)
-  console.log(data)
-
   return (
     <aside className='hidden lg:block w-[330px] px-4 pb-4 pt-[6px]'>
       <div className='sticky top-0 pt-[10px]'>

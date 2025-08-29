@@ -10,6 +10,7 @@ import { AppContext } from './contexts/app.context'
 import Profile from './pages/Profile'
 import Bookmark from './pages/Bookmark'
 import Setting from './pages/Setting'
+import Follow from './pages/Follow'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -55,6 +56,14 @@ function useRouterElements() {
           element: (
             <MainLayout>
               <Profile />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.FOLLOW,
+          element: (
+            <MainLayout>
+              <Follow />
             </MainLayout>
           )
         }

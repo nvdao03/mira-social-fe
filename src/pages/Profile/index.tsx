@@ -1,11 +1,10 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { PATH } from '../../constants/path'
 import { useQuery } from '@tanstack/react-query'
 import { userApi } from '../../apis/user.api'
 import type { ProfileType } from '../../types/user.type'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import { tabListPofile } from '../../data/tabListPofile'
-import ProfileReposts from '../../components/ProfileReposts'
 import ProfileLike from '../../components/ProfileLike'
 import ProfilePosts from '../../components/ProfilePosts'
 import { useState } from 'react'
@@ -13,6 +12,7 @@ import { useState } from 'react'
 function Profile() {
   const [isActiveTab, setIsActiveTab] = useState<string>('Posts')
   const params = useParams()
+  const navidate = useNavigate()
 
   const getProfileQuery = useQuery({
     queryKey: ['profile', params.user_id],
@@ -129,20 +129,32 @@ function Profile() {
                     </div>
                   </div>
                   <div className='flex items-center gap-5'>
-                    <Link
-                      to={''}
-                      className='flex items-center gap-1 text-[14px] py-4 hover:underline transition-all duration-300 ease-in-out'
+                    <div
+                      onClick={() =>
+                        navidate(`/${params.user_id}/follow`, {
+                          state: {
+                            type: 'Followings'
+                          }
+                        })
+                      }
+                      className='flex items-center gap-1 text-[14px] py-4 hover:underline transition-all duration-300 ease-in-out cursor-pointer'
                     >
                       <span className='font-semibold text-[14px]'>{user.following_count}</span>
                       <span className='text-[#71767B]'>Following</span>
-                    </Link>
-                    <Link
-                      to={''}
-                      className='flex items-center gap-1 text-[14px] py-4 hover:underline transition-all duration-300 ease-in-out'
+                    </div>
+                    <div
+                      onClick={() =>
+                        navidate(`/${params.user_id}/follow`, {
+                          state: {
+                            type: 'Followers'
+                          }
+                        })
+                      }
+                      className='flex items-center gap-1 text-[14px] py-4 hover:underline transition-all duration-300 ease-in-out cursor-pointer'
                     >
                       <span className='font-semibold text-[14px]'>{user.follower_count}</span>
                       <span className='text-[#71767B]'>Followers</span>
-                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>

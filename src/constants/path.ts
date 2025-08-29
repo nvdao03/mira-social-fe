@@ -7,9 +7,8 @@ export const PATH = {
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
   FORGOT_PASSWORD: '/forgot-password',
-  FOLLOWING: '/following',
-  FOLLOWERS: '/followers',
 
   PROFILE: '/:user_id',
-  POST_DETAIL: '/:username/:postId'
+  FOLLOW: '/:user_id/follow',
+  POST_DETAIL: '/post/:post_id'
 }
