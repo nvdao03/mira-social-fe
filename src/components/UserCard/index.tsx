@@ -30,7 +30,7 @@ function UserCard({ user }: PropTypes) {
   }
 
   return (
-    <div onClick={() => navidate(`/${user._id}`)} className='flex items-center justify-between py-4'>
+    <div onClick={() => navidate(`/${user._id}`)} className='flex items-center justify-between py-4 cursor-pointer'>
       <div className='flex gap-x-3'>
         <div className='w-10 h-10 rounded-full'>
           <img src={user.avatar || AvatarDefault} alt={user.name} className='w-full h-full object-cover rounded-full' />

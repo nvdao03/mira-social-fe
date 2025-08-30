@@ -76,7 +76,7 @@ function Post({ post, queryClient }: PropTypes) {
           onClick={(e) => {
             e.stopPropagation()
           }}
-          className='flex items-center flex-wrap text-sm text-[#71767B] gap-x-2'
+          className='inline-flex items-center flex-wrap text-sm text-[#71767B] gap-x-2'
         >
           <div className='flex items-center'>
             <span className='font-semibold text-white truncate max-w-[120px] sm:max-w-[200px] hover:underline'>
@@ -101,7 +101,10 @@ function Post({ post, queryClient }: PropTypes) {
         </Link>
         <p className='text-white text-[15px] leading-[1.5] mt-1 whitespace-pre-wrap break-words'>{post.content}</p>
         {videos.length === 1 && (
-          <div className='mt-3 rounded-2xl overflow-hidden border border-[#2E3235]'>
+          <div
+            className='mt-3 rounded-2xl overflow-hidden border border-[#2E3235]'
+            onClick={() => navigate(`/post/${post._id}`)}
+          >
             <video
               controls
               className='w-full h-auto max-h-[600px] object-contain cursor-pointer'
@@ -118,20 +121,13 @@ function Post({ post, queryClient }: PropTypes) {
         )}
         {images.length > 0 && (
           <div
+            onClick={() => navigate(`/post/${post._id}`)}
             className={`mt-3 grid gap-1 rounded-2xl overflow-hidden border border-[#2E3235]
             ${images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-2'}`}
           >
             {images.slice(0, 4).map((img, idx) => (
               <div key={idx} className={`relative ${images.length === 3 && idx === 0 ? 'col-span-2' : ''}`}>
-                <img
-                  src={img.url}
-                  alt='post media'
-                  className='w-full h-full object-cover max-h-[600px]'
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    e.preventDefault()
-                  }}
-                />
+                <img src={img.url} alt='post media' className='w-full h-full object-cover max-h-[600px]' />
               </div>
             ))}
           </div>

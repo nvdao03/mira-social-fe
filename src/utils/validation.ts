@@ -25,5 +25,10 @@ export const schemaSignUp = yup.object({
   country: yup.string().required(MESSAGE.COUNTRY_REQUIRED)
 })
 
+export const schemaAddComment = yup.object({
+  content: yup.string().required('Content is required').trim().max(500, 'Content must be at most 500 characters')
+})
+
 export type SignInFormValues = yup.InferType<typeof schemaSignIn>
 export type SignUpFormValues = yup.InferType<typeof schemaSignUp>
+export type AddCommentFormValues = yup.InferType<typeof schemaAddComment>
