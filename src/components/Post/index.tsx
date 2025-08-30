@@ -19,7 +19,6 @@ function Post({ post, queryClient }: PropTypes) {
   const [isActiveBookmark, setIsActiveBookmark] = useState(false)
   const [likeCount, setLikeCount] = useState(post.like_count)
   const [commentCount, setCommentCount] = useState(post.comment_count)
-  const [repostCount, setRepostCount] = useState(post.repost_count)
   const navigate = useNavigate()
 
   const likeToggle = useToggleMutation(likeApi.like, likeApi.unlike, queryClient)
@@ -38,10 +37,6 @@ function Post({ post, queryClient }: PropTypes) {
     setCommentCount(post.comment_count)
   }, [post.comment_count])
 
-  useEffect(() => {
-    setRepostCount(post.repost_count)
-  }, [post.repost_count])
-
   const handleLike = (body: { post_id: string }) => {
     likeToggle.toggle(body, isActiveLike)
     setIsActiveLike(!isActiveLike)
@@ -59,11 +54,11 @@ function Post({ post, queryClient }: PropTypes) {
 
   return (
     <div
-      onClick={() => navigate(`/${post.users.username}/${post._id}`)}
+      onClick={() => navigate(`/post/${post._id as string}`)}
       className='flex gap-3 px-4 pt-3 hover:bg-[#080808] transition border-b border-solid border-[#2E3235] cursor-pointer'
     >
       <Link
-        to={`/${post.users._id.toString()}`}
+        to={`/${post.users._id.toString() as string}`}
         className='flex-shrink-0'
         onClick={(e) => {
           e.stopPropagation()
@@ -77,7 +72,7 @@ function Post({ post, queryClient }: PropTypes) {
       </Link>
       <div className='flex-1'>
         <Link
-          to={`/${post.users._id.toString()}`}
+          to={`/${post.users._id.toString() as string}`}
           onClick={(e) => {
             e.stopPropagation()
           }}

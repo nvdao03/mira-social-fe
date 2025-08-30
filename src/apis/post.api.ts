@@ -6,6 +6,9 @@ const postApi = {
     return http.get('/posts', {
       params: query
     })
+  },
+  getPostDetail: (post_id: string) => {
+    return http.get(`posts/post/${post_id}`)
   }
 }
 

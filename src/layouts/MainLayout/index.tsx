@@ -3,7 +3,8 @@ import SideBar from '../../components/SideBar'
 import SideBarRight from '../../components/SideBarRight'
 import { PATH } from '../../constants/path'
 import { sidebars } from '../../data/sidebars'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { AppContext } from '../../contexts/app.context'
 
 interface MainLayoutPropsType {
   children: React.ReactNode
@@ -11,6 +12,7 @@ interface MainLayoutPropsType {
 
 function MainLayout({ children }: MainLayoutPropsType) {
   const [path, setPath] = useState<string>(PATH.HOME)
+  const { id } = useContext(AppContext)
 
   return (
     <>
@@ -24,7 +26,7 @@ function MainLayout({ children }: MainLayoutPropsType) {
           if (sidebar.path === PATH.BOOKMARK) return null
           return (
             <Link
-              to={sidebar.path}
+              to={sidebar.path === PATH.PROFILE ? `/${id}` : sidebar.path}
               onClick={() => setPath(sidebar.path)}
               key={sidebar.id}
               className={`flex items-center space-x-3 hover:bg-[#E7E9EA1A] rounded-full lg:px-3 lg:py-2 ${sidebar.path === path ? 'text-[#1d9bf0] font-semibold' : ''}`}

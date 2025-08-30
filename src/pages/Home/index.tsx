@@ -22,8 +22,18 @@ function Home() {
 
   const navigate = useNavigate()
 
-  const { avatar, name, username, refreshToken, setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } =
-    useContext(AppContext)
+  const {
+    id,
+    avatar,
+    name,
+    username,
+    refreshToken,
+    setIsauthenticated,
+    setRefreshToken,
+    setAvatar,
+    setUsername,
+    setName
+  } = useContext(AppContext)
 
   const queryParams: QueryConfig = useQueryParam()
   const queryConfig: QueryConfig = {
@@ -81,22 +91,12 @@ function Home() {
           <div className='mt-2 text-color_text text-[17px]'>
             <h2 className='font-semibold text-[17px]'>{name}</h2>
             <p className='text-[15px] text-[#71767B] mt-2'>@{username}</p>
-            <div className='flex items-center text-sm mt-1 gap-x-6'>
-              <Link to={PATH.FOLLOWING} className='flex items-center py-3'>
-                <span className='font-bold'>1</span>
-                <span className='ml-1 text-[#71767B]'>Following</span>
-              </Link>
-              <Link to={PATH.FOLLOWERS} className='flex items-center py-3'>
-                <span className='font-bold'>1</span>
-                <span className='ml-1 text-[#71767B]'>Follower</span>
-              </Link>
-            </div>
           </div>
         </div>
         <nav className='px-3 py-0'>
           {sidebars.map((sidebar) => (
             <Link
-              to={sidebar.path}
+              to={sidebar.path === PATH.PROFILE ? `/${id}` : sidebar.path}
               key={sidebar.id}
               onClick={() => setPath(sidebar.path)}
               className={`py-4 flex items-center space-x-5 hover:bg-[#E7E9EA1A]`}

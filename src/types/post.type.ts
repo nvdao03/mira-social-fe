@@ -27,7 +27,6 @@ export interface PostType {
   like_count: number
   comment_count: number
   bookmark_count: number
-  repost_count: number
   isLiked?: boolean
   isBookmarked?: boolean
 }

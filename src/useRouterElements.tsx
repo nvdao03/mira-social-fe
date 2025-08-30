@@ -11,6 +11,7 @@ import Profile from './pages/Profile'
 import Bookmark from './pages/Bookmark'
 import Setting from './pages/Setting'
 import Follow from './pages/Follow'
+import PostDetail from './pages/PostDetail'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -64,6 +65,14 @@ function useRouterElements() {
           element: (
             <MainLayout>
               <Follow />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.POST_DETAIL,
+          element: (
+            <MainLayout>
+              <PostDetail />
             </MainLayout>
           )
         }
