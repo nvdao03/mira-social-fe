@@ -9,6 +9,9 @@ const postApi = {
   },
   getPostDetail: (post_id: string) => {
     return http.get(`posts/post/${post_id}`)
+  },
+  deletePost: (post_id: string) => {
+    return http.delete(`posts/${post_id}`)
   }
 }
 
