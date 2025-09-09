@@ -9,7 +9,6 @@ import useToggleMutation from '../../hooks/useToggleMutation'
 import { useMutation, type QueryClient } from '@tanstack/react-query'
 import { AppContext } from '../../contexts/app.context'
 import postApi from '../../apis/post.api'
-import { set } from 'react-hook-form'
 
 interface PropTypes {
   post: PostType
@@ -73,7 +72,6 @@ function Post({ post, queryClient }: PropTypes) {
   }
 
   const handleDeletePost = (post_id: string) => {
-    console.log(1)
     deletePostMutation.mutate(post_id, {
       onSuccess: () => {
         setOpen(false)
@@ -85,8 +83,6 @@ function Post({ post, queryClient }: PropTypes) {
       }
     })
   }
-
-  console.log(open)
 
   // Lấy ra giá trị từ response trả về
   const images = post.medias.filter((item) => item.type === 0)
@@ -209,7 +205,7 @@ function Post({ post, queryClient }: PropTypes) {
           >
             {images.slice(0, 4).map((img, idx) => (
               <div key={idx} className={`relative ${images.length === 3 && idx === 0 ? 'col-span-2' : ''}`}>
-                <img src={img.url} alt='post media' className='w-full h-full object-cover max-h-[600px]' />
+                <img src={img.url} alt='post media' className='w-full object-cover max-h-[700px]' />
               </div>
             ))}
           </div>

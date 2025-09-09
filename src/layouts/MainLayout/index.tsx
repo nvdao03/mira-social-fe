@@ -23,7 +23,7 @@ function MainLayout({ children }: MainLayoutPropsType) {
       </div>
       <nav className='fixed bottom-0 left-0 right-0 bg-black border-t border-solid border-[#2E3235] flex justify-around md:hidden py-2'>
         {sidebars.map((sidebar) => {
-          if (sidebar.path === PATH.BOOKMARK) return null
+          if (sidebar.path === PATH.BOOKMARK || sidebar.path === PATH.UPLOAD) return null
           return (
             <Link
               to={sidebar.path === PATH.PROFILE ? `/${id}` : sidebar.path}

@@ -161,42 +161,11 @@ function Home() {
         </div>
       </header>
 
-      {/* Content Submit */}
-      <div className='px-4 py-3 border-b border-solid border-[#2E3235]'>
-        <div className='flex gap-x-3'>
-          <div className='w-10 h-10 hidden md:block'>
-            <img src={avatar || AvatarDefault} alt='avatar' className=' w-full h-full object-cover rounded-full' />
-          </div>
-          <form className='flex-1' encType='multipart/form-data' method='post'>
-            <textarea
-              className='bg-transparent w-full placeholder:text-[#71767B] focus:bg-transparent focus:outline-none py-[8px] lg:py-[8px] leading-[1.5] resize-none overflow-hidden border-solid border-b border-[#2E3235]'
-              onInput={(e) => {
-                const textarea = e.target as HTMLTextAreaElement
-                textarea.style.height = 'auto'
-                textarea.style.height = `${textarea.scrollHeight}px`
-              }}
-              placeholder="What's happening?"
-            ></textarea>
-            <div className='flex items-center justify-between mt-2'>
-              <div className='flex items-center gap-x-4'>
-                <label className='cursor-pointer'>
-                  <img src={FileImage} alt='' className='w-[20px]' />
-                  <input className='hidden' type='file' name='image' multiple />
-                </label>
-                <label className='cursor-pointer'>
-                  <img src={FileVideo} alt='' className='w-[20px]' />
-                  <input className='hidden' type='file' name='video' multiple />
-                </label>
-              </div>
-              <button className='bg-[#787A74] px-4 py-2.5 ml-3 rounded-full text-[#0F1410] font-semibold'>Post</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
       {/* List Post */}
-      {data?.data.data.posts &&
-        data?.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} queryClient={queryClient} />)}
+      <div className='mt-1'>
+        {data?.data.data.posts &&
+          data?.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} queryClient={queryClient} />)}
+      </div>
     </div>
   )
 }

@@ -1,9 +1,15 @@
+import { ToastContainer } from 'react-toastify'
 import useRouterElements from './useRouterElements'
 
 function App() {
   const routerElements = useRouterElements()
 
-  return <>{routerElements}</>
+  return (
+    <>
+      {routerElements}
+      <ToastContainer />
+    </>
+  )
 }
 
 export default App

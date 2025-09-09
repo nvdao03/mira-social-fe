@@ -12,6 +12,7 @@ import Bookmark from './pages/Bookmark'
 import Setting from './pages/Setting'
 import Follow from './pages/Follow'
 import PostDetail from './pages/PostDetail'
+import CreatePost from './components/CreatePost'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -75,10 +76,17 @@ function useRouterElements() {
               <PostDetail />
             </MainLayout>
           )
+        },
+        {
+          path: PATH.UPLOAD,
+          element: (
+            <MainLayout>
+              <CreatePost />
+            </MainLayout>
+          )
         }
       ]
     },
-
     {
       element: <RejectedRoute />,
       children: [

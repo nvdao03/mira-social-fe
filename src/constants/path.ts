@@ -6,6 +6,7 @@ export const PATH = {
   SETTINGS: '/settings',
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
+  UPLOAD: '/upload',
   FORGOT_PASSWORD: '/forgot-password',
 
   PROFILE: '/:user_id',

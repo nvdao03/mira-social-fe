@@ -1,5 +1,6 @@
 import type { QueryConfig } from '../configs/query.config'
 import http from '../utils/http'
+import type { CreatePostFormValues } from '../utils/validation'
 
 const postApi = {
   getPosts: (query: QueryConfig) => {
@@ -12,6 +13,9 @@ const postApi = {
   },
   deletePost: (post_id: string) => {
     return http.delete(`posts/${post_id}`)
+  },
+  createPost: (body: CreatePostFormValues) => {
+    return http.post('/posts', body)
   }
 }
 

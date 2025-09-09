@@ -1,4 +1,4 @@
-import type { AxiosInstance } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import {
   getAccessTokenFromLocalStorage,
@@ -41,18 +41,22 @@ class Http {
     this.id = getIdFromLocalStorage()
     this.instance = axios.create({
       baseURL: URL,
-      timeout: 10000,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      timeout: 10000
     })
     this.instance.interceptors.request.use(
-      (config) => {
+      (config: InternalAxiosRequestConfig) => {
         const access_token = getAccessTokenFromLocalStorage()
+
         if (access_token && config.headers) {
           config.headers.Authorization = `Bearer ${access_token}`
-          return config
         }
+
+        if (config.data instanceof FormData) {
+          config.headers['Content-Type'] = 'multipart/form-data'
+        } else {
+          config.headers['Content-Type'] = 'application/json'
+        }
+
         return config
       },
       (error) => {
