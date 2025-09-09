@@ -11,5 +11,6 @@ export const PATH = {
 
   PROFILE: '/:user_id',
   FOLLOW: '/:user_id/follow',
-  POST_DETAIL: '/post/:post_id'
+  POST_DETAIL: '/post/:post_id',
+  UPDATE_POST: '/update-post/:post_id'
 }

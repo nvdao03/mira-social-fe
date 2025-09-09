@@ -13,6 +13,7 @@ import Setting from './pages/Setting'
 import Follow from './pages/Follow'
 import PostDetail from './pages/PostDetail'
 import CreatePost from './components/CreatePost'
+import UpdatePost from './components/UpdatePost'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -82,6 +83,14 @@ function useRouterElements() {
           element: (
             <MainLayout>
               <CreatePost />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.UPDATE_POST,
+          element: (
+            <MainLayout>
+              <UpdatePost />
             </MainLayout>
           )
         }

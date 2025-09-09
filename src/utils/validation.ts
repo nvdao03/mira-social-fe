@@ -32,7 +32,15 @@ export const schemaAddComment = yup.object({
 export const schemaCreatePost = yup.object({
   type: yup.number().required('Type is required'),
   user_id: yup.string().required('User ID is required'),
-  content: yup.string().trim().max(500, 'Content must be at most 500 characters'),
+  content: yup.string().trim().max(500, 'Content must be at most 500 characters').nullable(),
+  medias: yup.array(),
+  parent_id: yup.string().nullable()
+})
+
+export const schemaUpdatePost = yup.object({
+  type: yup.number().required('Type is required'),
+  user_id: yup.string().required('User ID is required'),
+  content: yup.string().trim().max(500, 'Content must be at most 500 characters').nullable(),
   medias: yup.array(),
   parent_id: yup.string().nullable()
 })
@@ -41,3 +49,4 @@ export type SignInFormValues = yup.InferType<typeof schemaSignIn>
 export type SignUpFormValues = yup.InferType<typeof schemaSignUp>
 export type AddCommentFormValues = yup.InferType<typeof schemaAddComment>
 export type CreatePostFormValues = yup.InferType<typeof schemaCreatePost>
+export type UpdatePostFormValues = yup.InferType<typeof schemaUpdatePost>

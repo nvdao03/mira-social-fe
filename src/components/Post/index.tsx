@@ -156,21 +156,43 @@ function Post({ post, queryClient }: PropTypes) {
             )}
             {/* Menudropdown */}
             {open && (
-              <div className='absolute right-0 w-40 top-0 rounded-xl bg-black text-white border border-gray-700 overflow-hidden shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)] z-50'>
+              <div className='absolute right-0 w-40 py-1 top-0 rounded-xl bg-black text-white border border-gray-700 overflow-hidden shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)] z-50'>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     handleDeletePost(post._id.toString() as string)
                   }}
-                  className='px-4 py-2 text-[15px] flex items-center gap-x-3 text-[#f4212e] font-semibold w-full cursor-pointer'
+                  className='px-4 py-2 text-[15px] flex items-center gap-x-3 text-color_auth w-full cursor-pointer hover:text-[#f4212e] group transition-all duration-200 ease-in-out'
                 >
-                  <svg viewBox='0 0 24 24' aria-hidden='true' className='inline-block h-5 w-5 fill-[#f4212e]'>
+                  <svg
+                    viewBox='0 0 24 24'
+                    aria-hidden='true'
+                    className='inline-block h-5 w-5 group-hover:fill-[#f4212e]'
+                    fill='#FFFFFF'
+                  >
                     <g>
                       <path d='M16 6V4.5C16 3.12 14.88 2 13.5 2h-3C9.11 2 8 3.12 8 4.5V6H3v2h1.06l.81 11.21C4.98 20.78 6.28 22 7.86 22h8.27c1.58 0 2.88-1.22 3-2.79L19.93 8H21V6h-5zm-6-1.5c0-.28.22-.5.5-.5h3c.27 0 .5.22.5.5V6h-4V4.5zm7.13 14.57c-.04.52-.47.93-1 .93H7.86c-.53 0-.96-.41-1-.93L6.07 8h11.85l-.79 11.07zM9 17v-6h2v6H9zm4 0v-6h2v6h-2z'></path>
                     </g>
                   </svg>
-                  Delete
+                  Delete Post
                 </button>
+                <Link
+                  to={`/update-post/${post._id}`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                  }}
+                  className='px-4 py-2 text-[15px] flex items-center gap-x-3 text-color_auth w-full hover:text-[#1d9bf0] transition-all duration-200 ease-in-out cursor-pointer group'
+                >
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 640 640'
+                    className='inline-block h-5 w-5 group-hover:fill-[#1d9bf0]'
+                    fill='#FFFFFF'
+                  >
+                    <path d='M416.9 85.2L372 130.1L509.9 268L554.8 223.1C568.4 209.6 576 191.2 576 172C576 152.8 568.4 134.4 554.8 120.9L519.1 85.2C505.6 71.6 487.2 64 468 64C448.8 64 430.4 71.6 416.9 85.2zM338.1 164L122.9 379.1C112.2 389.8 104.4 403.2 100.3 417.8L64.9 545.6C62.6 553.9 64.9 562.9 71.1 569C77.3 575.1 86.2 577.5 94.5 575.2L222.3 539.7C236.9 535.6 250.2 527.9 261 517.1L476 301.9L338.1 164z' />
+                  </svg>
+                  Update
+                </Link>
               </div>
             )}
           </div>

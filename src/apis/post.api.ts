@@ -1,6 +1,6 @@
 import type { QueryConfig } from '../configs/query.config'
 import http from '../utils/http'
-import type { CreatePostFormValues } from '../utils/validation'
+import type { CreatePostFormValues, UpdatePostFormValues } from '../utils/validation'
 
 const postApi = {
   getPosts: (query: QueryConfig) => {
@@ -16,6 +16,9 @@ const postApi = {
   },
   createPost: (body: CreatePostFormValues) => {
     return http.post('/posts', body)
+  },
+  updatePost: (body: UpdatePostFormValues, post_id: string) => {
+    return http.put(`/posts/${post_id}`, body)
   }
 }
 
