@@ -6,5 +6,11 @@ export const fileApi = {
   },
   uploadVideo: (file: FormData) => {
     return http.post('/medias/upload-video', file)
+  },
+  uploadAvatar: (file: FormData) => {
+    return http.post('/medias/upload-avatar', file)
+  },
+  uploadCoverPhoto: (file: FormData) => {
+    return http.post('/medias/upload-cover-photo', file)
   }
 }

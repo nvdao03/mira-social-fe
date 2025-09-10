@@ -45,8 +45,19 @@ export const schemaUpdatePost = yup.object({
   parent_id: yup.string().nullable()
 })
 
+export const schemaUpdateProfile = yup.object({
+  cover_photo: yup.string().nullable(),
+  avatar: yup.string().nullable(),
+  name: yup.string().nullable(),
+  bio: yup.string().nullable(),
+  location: yup.string().nullable(),
+  website: yup.string().nullable(),
+  date_of_birth: yup.string().nullable()
+})
+
 export type SignInFormValues = yup.InferType<typeof schemaSignIn>
 export type SignUpFormValues = yup.InferType<typeof schemaSignUp>
 export type AddCommentFormValues = yup.InferType<typeof schemaAddComment>
 export type CreatePostFormValues = yup.InferType<typeof schemaCreatePost>
 export type UpdatePostFormValues = yup.InferType<typeof schemaUpdatePost>
+export type UpdateProfileFormValues = yup.InferType<typeof schemaUpdateProfile>

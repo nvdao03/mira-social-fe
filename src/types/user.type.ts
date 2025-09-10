@@ -26,6 +26,6 @@ export interface ProfileType {
   bio: string
   website: string
   cover_photo: string
-  date_of_birth: Date
+  date_of_birth: string | null
   location: string
 }

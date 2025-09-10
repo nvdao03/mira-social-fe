@@ -1,5 +1,6 @@
 import type { QueryConfig } from '../configs/query.config'
 import http from '../utils/http'
+import type { UpdateProfileFormValues } from '../utils/validation'
 
 export const userApi = {
   getUserSuggestions: (query: QueryConfig) => {
@@ -18,5 +19,8 @@ export const userApi = {
   },
   getRepostsProfile(user_id: string, query: QueryConfig) {
     return http.get(`/users/${user_id}/reposts`, { params: query })
+  },
+  updateProile(user_id: string, body: UpdateProfileFormValues) {
+    return http.put(`/users/${user_id}`, body)
   }
 }

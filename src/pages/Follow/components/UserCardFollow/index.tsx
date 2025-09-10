@@ -127,7 +127,7 @@ function UserCardFollow({ user, type }: PropTypes) {
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`border border-solid text-[#0F1419] min-w-[99px] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 transition-all duration-200 ease-in-out ${isHovered && 'bg-[#f4212e1a] border-[#67070f] text-[#f4212e]'}`}
+          className={`border border-solid text-[#0F1419] min-w-[99px] font-semibold bg-[#eff3f4] text-[14px] rounded-full px-4 py-2 transition-all duration-200 ease-in-out ${isHovered && 'bg-[#f4212e1a] border border-solid border-[#67070f] text-[#f4212e]'}`}
         >
           {isHovered ? 'Unfollow' : 'Following'}
         </button>

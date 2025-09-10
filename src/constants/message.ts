@@ -9,5 +9,6 @@ export const MESSAGE = {
   INVALID_EMAIL_OR_PASSWORD: 'Invalid email or password',
   LOGOUT_SUCCESSFULLY: 'Logout successfully',
   LOGIN_SUCCESSFULLY: 'Login successfully',
-  CREATE_ACCOUNT_SUCCESSFULLY: 'Create account successfully'
+  CREATE_ACCOUNT_SUCCESSFULLY: 'Create account successfully',
+  UPDATE_PROFILE_SUCCESSFULLY: 'Update profile successfully'
 }

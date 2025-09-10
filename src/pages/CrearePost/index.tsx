@@ -24,14 +24,7 @@ export default function CreatePost() {
     return medias.filter((item) => item.type === 1)
   }, [medias])
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-    reset
-  } = useForm<CreatePostFormData>({
+  const { register, handleSubmit, setValue, watch, reset } = useForm<CreatePostFormData>({
     defaultValues: {
       type: 0,
       parent_id: null,

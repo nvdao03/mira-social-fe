@@ -12,8 +12,9 @@ import Bookmark from './pages/Bookmark'
 import Setting from './pages/Setting'
 import Follow from './pages/Follow'
 import PostDetail from './pages/PostDetail'
-import CreatePost from './components/CreatePost'
-import UpdatePost from './components/UpdatePost'
+import CreatePost from './pages/CrearePost'
+import UpdatePost from './pages/UpdatePost'
+import UpdateProfile from './pages/UpdateProfile'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -91,6 +92,14 @@ function useRouterElements() {
           element: (
             <MainLayout>
               <UpdatePost />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.UPDATE_PROFILE,
+          element: (
+            <MainLayout>
+              <UpdateProfile />
             </MainLayout>
           )
         }
