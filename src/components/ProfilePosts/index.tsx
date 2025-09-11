@@ -28,7 +28,7 @@ function ProfilePosts() {
   return (
     <div className='relative mt-1'>
       {data?.data.data.posts.length === 0 && (
-        <h3 className='absolute mt-[50px] md:mt-[40px] xl:mt-[70px] top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
+        <h3 className='absolute mt-[50px] md:mt-[40px] xl:mt-[40px] top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
           No posts
         </h3>
       )}

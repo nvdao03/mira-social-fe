@@ -8,6 +8,9 @@ export const PATH = {
   SIGN_UP: '/sign-up',
   UPLOAD: '/upload',
   FORGOT_PASSWORD: '/forgot-password',
+  EXPLORE: '/explore',
+  CONNECT: '/connect',
+  NOT_FOUND: '/404',
 
   PROFILE: '/:user_id',
   FOLLOW: '/:user_id/follow',

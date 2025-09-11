@@ -1,8 +1,10 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import type { UserSuggestion } from '../../types/user.type'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { followApi } from '../../apis/follow.api'
+import { toast } from 'react-toastify'
+import { PATH } from '../../constants/path'
 
 interface PropTypes {
   user: UserSuggestion
@@ -10,6 +12,8 @@ interface PropTypes {
 
 function UserCard({ user }: PropTypes) {
   const navidate = useNavigate()
+  const location = useLocation()
+  const pathName = location.pathname
   const queryClient = useQueryClient()
 
   const followMutation = useMutation({
@@ -25,6 +29,8 @@ function UserCard({ user }: PropTypes) {
         queryClient.invalidateQueries({ queryKey: ['profile'] })
         queryClient.invalidateQueries({ queryKey: ['followings'] })
         queryClient.invalidateQueries({ queryKey: ['followers'] })
+        queryClient.invalidateQueries({ queryKey: ['user_suggestions_connect'] })
+        toast.success('Follow successfully')
       }
     })
   }
@@ -37,7 +43,9 @@ function UserCard({ user }: PropTypes) {
         </div>
         <div className='h-10 flex flex-col justify-center'>
           <div className='flex items-center'>
-            <span className={`hover:underline text-[15px] leading-[1.5] font-semibold truncate max-w-[100px]`}>
+            <span
+              className={`hover:underline text-[15px] leading-[1.5] font-semibold ${pathName !== PATH.CONNECT && 'truncate max-w-[100px]'}`}
+            >
               {user.name}
             </span>
             {user.verify === 1 && (

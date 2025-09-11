@@ -15,7 +15,6 @@ function useToggleMutation(
     mutationFn: actionFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
-      queryClient.invalidateQueries({ queryKey: ['posts'] })
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     }
   })
@@ -23,7 +22,6 @@ function useToggleMutation(
     mutationFn: revertFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
-      queryClient.invalidateQueries({ queryKey: ['posts'] })
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     }
   })

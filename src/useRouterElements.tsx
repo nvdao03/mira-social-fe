@@ -15,6 +15,8 @@ import PostDetail from './pages/PostDetail'
 import CreatePost from './pages/CrearePost'
 import UpdatePost from './pages/UpdatePost'
 import UpdateProfile from './pages/UpdateProfile'
+import Explore from './pages/Explore'
+import Connect from './pages/Connect'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -100,6 +102,22 @@ function useRouterElements() {
           element: (
             <MainLayout>
               <UpdateProfile />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.EXPLORE,
+          element: (
+            <MainLayout>
+              <Explore />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.CONNECT,
+          element: (
+            <MainLayout>
+              <Connect />
             </MainLayout>
           )
         }

@@ -16,13 +16,13 @@ function Followings({ user_id, type }: PropTypes) {
     limit: queryParams.limit || 15
   }
 
-  const getFollowersQuery = useQuery({
+  const getFollowingsQuery = useQuery({
     queryKey: ['followings'],
     queryFn: () => followApi.getFollowings(user_id as string, queryConfig),
     keepPreviousData: true
   })
 
-  const { data } = getFollowersQuery
+  const { data } = getFollowingsQuery
 
   return (
     <div className='relative mt-1 px-4'>

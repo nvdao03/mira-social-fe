@@ -92,7 +92,7 @@ function UserCardFollow({ user, type }: PropTypes) {
   }
 
   return (
-    <div onClick={() => navigate(`/${user._id}`)} className='flex items-center justify-between py-4'>
+    <div onClick={() => navigate(`/${user._id}`)} className='flex items-center justify-between py-4 cursor-pointer'>
       <div className='flex gap-x-3'>
         <div className='w-10 h-10 rounded-full'>
           <img src={user.avatar || AvatarDefault} alt={user.name} className='w-full h-full object-cover rounded-full' />
@@ -144,7 +144,7 @@ function UserCardFollow({ user, type }: PropTypes) {
           onMouseLeave={() => setIsHovered(false)}
           className={`border border-solid text-[#0F1419] min-w-[99px] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 transition-all duration-200 ease-in-out ${isHovered && 'bg-[#f4212e1a] border-[#67070f] text-[#f4212e]'}`}
         >
-          Following
+          {isHovered ? 'Unfollow' : 'Following'}
         </button>
       )}
       {/* Xử lý: Nếu là user đang login và nếu đang ở component Followers và nếu user card đang được render chưa được mình follow thì hiện thị nút Follow back và call API follow */}

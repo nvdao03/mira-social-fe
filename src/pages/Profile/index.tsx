@@ -1,26 +1,100 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { PATH } from '../../constants/path'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { userApi } from '../../apis/user.api'
 import type { ProfileType } from '../../types/user.type'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import { tabListPofile } from '../../data/tabListPofile'
 import ProfileLike from '../../components/ProfileLike'
 import ProfilePosts from '../../components/ProfilePosts'
-import { useContext, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { AppContext } from '../../contexts/app.context'
+import { followApi } from '../../apis/follow.api'
+import useQueryParam from '../../hooks/useQueryParam'
+import type { QueryConfig } from '../../configs/query.config'
+import { toast } from 'react-toastify'
 
 function Profile() {
   const { id } = useContext(AppContext)
-  const [isActiveTab, setIsActiveTab] = useState<string>('Posts')
+
   const params = useParams()
   const navidate = useNavigate()
+
+  const queryParams: QueryConfig = useQueryParam()
+  const queryConfig: QueryConfig = {
+    limit: queryParams.limit || 100,
+    page: queryParams.page || 1
+  }
+
+  const queryClient = useQueryClient()
 
   const getProfileQuery = useQuery({
     queryKey: ['profile', params.user_id],
     queryFn: () => userApi.getProfile(params.user_id as string),
     keepPreviousData: true
   })
+
+  const getFollowingQuery = useQuery({
+    queryKey: ['followings'],
+    queryFn: () => followApi.getFollowings(id as string, queryConfig),
+    keepPreviousData: true
+  })
+
+  const getFollowersQuery = useQuery({
+    queryKey: ['followers'],
+    queryFn: () => followApi.getFollowers(id as string, queryConfig),
+    keepPreviousData: true
+  })
+
+  const followMutation = useMutation({
+    mutationFn: (body: { followed_user_id: string }) => {
+      return followApi.follow(body)
+    }
+  })
+
+  const unfollowMutation = useMutation({
+    mutationFn: (user_id: string) => {
+      return followApi.unfollow(user_id)
+    }
+  })
+
+  const [isActiveTab, setIsActiveTab] = useState<string>('Posts')
+  const [isHover, setIsHover] = useState<boolean>(false)
+  const listIdFollowing: string[] = useMemo(() => {
+    if (!getFollowingQuery.data?.data.data.followers) return []
+    return getFollowingQuery.data.data.data.followers.map((user: any) => user.user_followings._id)
+  }, [getFollowingQuery.data?.data.data.followers])
+  const listIdFollowers: string[] = useMemo(() => {
+    if (!getFollowersQuery.data?.data.data.followers) return []
+    return getFollowersQuery.data.data.data.followers.map((user: any) => user.user_followers._id)
+  }, [getFollowersQuery.data?.data.data.followers])
+
+  const isFollowing = listIdFollowing.includes(params.user_id as string)
+  const isFollowers = listIdFollowers.includes(params.user_id as string) && !isFollowing
+
+  const handleFollow = (body: { followed_user_id: string }) => {
+    followMutation.mutate(body, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user_not_follow_suggestions'] })
+        queryClient.invalidateQueries({ queryKey: ['profile'] })
+        queryClient.invalidateQueries({ queryKey: ['followings'] })
+        queryClient.invalidateQueries({ queryKey: ['followers'] })
+        queryClient.invalidateQueries({ queryKey: ['user_suggestions_connect'] })
+        toast.success('Follow successfully')
+      }
+    })
+  }
+
+  const handleUnfollow = (user_id: string) => {
+    unfollowMutation.mutate(user_id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user_not_follow_suggestions'] })
+        queryClient.invalidateQueries({ queryKey: ['profile'] })
+        queryClient.invalidateQueries({ queryKey: ['followings'] })
+        queryClient.invalidateQueries({ queryKey: ['followers'] })
+      }
+    })
+  }
 
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
@@ -40,7 +114,6 @@ function Profile() {
             </div>
             {/*User Info*/}
             <div>
-              {/* Cover photo */}
               <div
                 className='relative w-full h-[140px] md:h-[200px] bg-[#333639] bg-center bg-cover bg-no-repeat'
                 style={{ backgroundImage: user.cover_photo ? `url(${user.cover_photo})` : undefined }}
@@ -60,7 +133,39 @@ function Profile() {
                     </Link>
                   </div>
                 )}
-                <div className={`mt-4 md:mt-8 ${id !== params.user_id && 'mt-[50px] md:mt-[70px]'}`}>
+                {id !== params.user_id && (
+                  <div className='flex justify-end rounded-full'>
+                    {!isFollowing && !isFollowers && (
+                      <button
+                        onClick={() => handleFollow({ followed_user_id: params.user_id as string })}
+                        className='text-color_auth text-[15px] font-semibold ml-auto px-[17px] py-[10px] border border-solid border-[#536471] rounded-full hover:opacity-85 cursor-pointer transition-all duration-200 ease-in-out'
+                      >
+                        Follow
+                      </button>
+                    )}
+                    {isFollowing && (
+                      <button
+                        onMouseEnter={() => setIsHover(true)}
+                        onMouseLeave={() => setIsHover(false)}
+                        onClick={() => handleUnfollow(params.user_id as string)}
+                        className={`text-[15px] min-w-[105px] font-semibold ml-auto px-[17px] py-[10px] border border-solid border-[#536471] rounded-full hover:opacity-85 cursor-pointer transition-all duration-200 ease-in-out 
+                        ${isHover && 'bg-[#f4212e1a] border-[#67070f] text-[#f4212e]'}`}
+                      >
+                        {isHover ? 'Unfollow' : 'Following'}
+                      </button>
+                    )}
+                    {!isFollowing && isFollowers && (
+                      <button
+                        onClick={() => handleFollow({ followed_user_id: params.user_id as string })}
+                        className='text-[15px] min-w-[105px] font-semibold ml-auto px-[17px] py-[10px] border border-solid border-[#536471] rounded-full hover:opacity-85 cursor-pointer transition-all duration-200 ease-in-out'
+                      >
+                        Follow back
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <div className={`mt-4 md:mt-8`}>
                   <div className='flex items-center gap-x-3'>
                     <h3 className='font-semibold text-color_auth text-[20px]'>{user.name}</h3>
                     {user.verify === 1 && (

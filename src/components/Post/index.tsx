@@ -139,7 +139,7 @@ function Post({ post, queryClient }: PropTypes) {
             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           </Link>
           {/* Action update or delete post */}
-          <div className='relative' ref={menuRef}>
+          <div className='relative py-1' ref={menuRef}>
             {post.users._id === id && (
               <button
                 onClick={(e) => {

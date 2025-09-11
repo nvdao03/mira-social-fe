@@ -1,8 +1,6 @@
 import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
-import FileImage from '../../assets/icons/file-image.svg'
-import FileVideo from '../../assets/icons/file-video.svg'
 import Logo from '../../assets/imgs/logo.png'
 import { AppContext } from '../../contexts/app.context'
 import { PATH } from '../../constants/path'
@@ -14,6 +12,7 @@ import useQueryParam from '../../hooks/useQueryParam'
 import postApi from '../../apis/post.api'
 import Post from '../../components/Post'
 import type { PostType } from '../../types/post.type'
+import Loading from '../../components/Loading'
 
 function Home() {
   const [isActive, setIsActive] = useState<string>('For you')
@@ -49,7 +48,7 @@ function Home() {
     keepPreviousData: true
   })
 
-  const { data } = postListQuery
+  const { data, isLoading } = postListQuery
 
   const logoutMutation = useMutation({
     mutationFn: (body: { refresh_token: string }) => authApi.logout(body)
@@ -160,10 +159,15 @@ function Home() {
           ))}
         </div>
       </header>
-
       {/* List Post */}
       <div className='mt-1'>
-        {data?.data.data.posts &&
+        {isLoading && (
+          <div className='w-full flex items-center justify-center h-[100vh]'>
+            <Loading />
+          </div>
+        )}
+        {!isLoading &&
+          data?.data.data.posts &&
           data?.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} queryClient={queryClient} />)}
       </div>
     </div>
