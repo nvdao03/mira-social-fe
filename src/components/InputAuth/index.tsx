@@ -3,6 +3,7 @@ import type { InputHTMLAttributes } from 'react'
 interface InputAuthPropsType extends InputHTMLAttributes<HTMLInputElement> {
   classNameInput: string
   classNameError: string
+  classNameWrap?: string
   register: any
   errorMessage?: string
 }
@@ -15,10 +16,11 @@ function InputAuth({
   name,
   id,
   register,
-  errorMessage
+  errorMessage,
+  classNameWrap
 }: InputAuthPropsType) {
   return (
-    <div>
+    <div className={classNameWrap}>
       <input
         autoComplete='off'
         type={type}

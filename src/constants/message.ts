@@ -2,7 +2,12 @@ export const MESSAGE = {
   EMAIL_INVALID: 'Email is invalid',
   EMAIL_REQUIRED: 'Email is required',
   PASSWORD_REQUIRED: 'Password is required',
+  NEW_PASSWORD_REQUIRED: 'New password is required',
+  CONFIRM_PASSWORD_REQUIRED: 'Confirm password is required',
   PASSWORD_LENGTH: 'Password must be at least 6 to 180 characters',
+  CONFIRM_PASSWORD_NOT_MATCH: 'Confrim password do not match',
+  NEW_PASSW0RD_LENGTH: 'New password must be at least 6 to 180 characters',
+  CONFIRM_PASSWORD_LENGTH: 'Confirm password must be at least 6 to 180 characters',
   USERNAME_REQUIRED: 'Username is required',
   USERNAME_LENGTH: 'Username must be at least 3 to 50 characters',
   COUNTRY_REQUIRED: 'Country/Region is required',
@@ -11,5 +16,6 @@ export const MESSAGE = {
   LOGIN_SUCCESSFULLY: 'Login successfully',
   CREATE_ACCOUNT_SUCCESSFULLY: 'Create account successfully',
   UPDATE_PROFILE_SUCCESSFULLY: 'Update profile successfully',
+  CHANGE_PASSWORD_SUCCESSFULLY: 'Change password successfully',
   MAX_FILE: 'Maximum 1 image allowed'
 }

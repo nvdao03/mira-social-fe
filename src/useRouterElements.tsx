@@ -17,6 +17,7 @@ import UpdatePost from './pages/UpdatePost'
 import UpdateProfile from './pages/UpdateProfile'
 import Explore from './pages/Explore'
 import Connect from './pages/Connect'
+import ChangePassword from './pages/Setting/ChangePassword'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -118,6 +119,14 @@ function useRouterElements() {
           element: (
             <MainLayout>
               <Connect />
+            </MainLayout>
+          )
+        },
+        {
+          path: PATH.SETTINGS_PASSWORD,
+          element: (
+            <MainLayout>
+              <ChangePassword />
             </MainLayout>
           )
         }

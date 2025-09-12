@@ -4,6 +4,7 @@ export const PATH = {
   MESSAGE: '/message',
   BOOKMARK: '/bookmark',
   SETTINGS: '/settings',
+  SETTINGS_PASSWORD: '/settings/password',
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
   UPLOAD: '/upload',
