@@ -17,16 +17,17 @@ import { toast } from 'react-toastify'
 function Profile() {
   const { id } = useContext(AppContext)
 
-  const params = useParams()
-  const navidate = useNavigate()
+  const queryClient = useQueryClient()
 
   const queryParams: QueryConfig = useQueryParam()
+
   const queryConfig: QueryConfig = {
     limit: queryParams.limit || 100,
     page: queryParams.page || 1
   }
 
-  const queryClient = useQueryClient()
+  const params = useParams()
+  const navidate = useNavigate()
 
   const getProfileQuery = useQuery({
     queryKey: ['profile', params.user_id],
@@ -60,13 +61,19 @@ function Profile() {
 
   const [isActiveTab, setIsActiveTab] = useState<string>('Posts')
   const [isHover, setIsHover] = useState<boolean>(false)
+
   const listIdFollowing: string[] = useMemo(() => {
     if (!getFollowingQuery.data?.data.data.followers) return []
-    return getFollowingQuery.data.data.data.followers.map((user: any) => user.user_followings._id)
+    if (getFollowingQuery.data?.data.data.followers) {
+      return getFollowingQuery.data.data.data.followers.map((user: any) => user.user_followings._id)
+    }
   }, [getFollowingQuery.data?.data.data.followers])
+
   const listIdFollowers: string[] = useMemo(() => {
     if (!getFollowersQuery.data?.data.data.followers) return []
-    return getFollowersQuery.data.data.data.followers.map((user: any) => user.user_followers._id)
+    if (getFollowersQuery.data?.data.data.followers) {
+      return getFollowersQuery.data.data.data.followers.map((user: any) => user.user_followers._id)
+    }
   }, [getFollowersQuery.data?.data.data.followers])
 
   const isFollowing = listIdFollowing.includes(params.user_id as string)
@@ -164,7 +171,6 @@ function Profile() {
                     )}
                   </div>
                 )}
-
                 <div className={`mt-4 md:mt-8`}>
                   <div className='flex items-center gap-x-3'>
                     <h3 className='font-semibold text-color_auth text-[20px]'>{user.name}</h3>
@@ -186,7 +192,7 @@ function Profile() {
                       </div>
                     )}
                   </div>
-                  <p className='text-[#71767B] text-[15px] font-semibold mt-1'>@{user.username}</p>
+                  <p className='text-[#71767B] text-[15px] font-semibold mt-1'>{user.username}</p>
                   <div className='mt-3 flex flex-col gap-[10px]'>
                     {user.bio && (
                       <div className='w-full leading-[1.5]'>

@@ -7,8 +7,10 @@ function Follow() {
   const params = useParams()
   const location = useLocation()
   const navidate = useNavigate()
+
   const type = location.state.type as string
   const name = location.state.name as string
+
   const [isActiveTab, setIsActiveTab] = useState<string>(type)
 
   return (

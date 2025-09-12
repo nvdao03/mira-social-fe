@@ -13,7 +13,7 @@ interface PropTypes {
 function UserCard({ user }: PropTypes) {
   const navidate = useNavigate()
   const location = useLocation()
-  const pathName = location.pathname
+
   const queryClient = useQueryClient()
 
   const followMutation = useMutation({
@@ -34,6 +34,8 @@ function UserCard({ user }: PropTypes) {
       }
     })
   }
+
+  const pathName = location.pathname
 
   return (
     <div onClick={() => navidate(`/${user._id}`)} className='flex items-center justify-between py-4 cursor-pointer'>
@@ -63,7 +65,7 @@ function UserCard({ user }: PropTypes) {
               </svg>
             )}
           </div>
-          <span className='text-[#71767B] text-[13px] truncate max-w-[100px] mt-1'>@{user.username}</span>
+          <span className='text-[#71767B] text-[13px] truncate max-w-[100px] mt-1'>{user.username}</span>
         </div>
       </div>
       <button

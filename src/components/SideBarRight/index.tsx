@@ -9,9 +9,9 @@ import { PATH } from '../../constants/path'
 function SideBarRight() {
   const params = useParams()
   const location = useLocation()
-  const pathName = location.pathname
 
   const queryParams: QueryConfig = useQueryParam()
+
   const queryConfig: QueryConfig = {
     limit: queryParams.limit || 5,
     page: queryParams.page || 1
@@ -22,7 +22,7 @@ function SideBarRight() {
     queryFn: () => userApi.getUserSuggestions(queryConfig)
   })
 
-  const { data } = userSuggestionsQuery
+  const pathName = location.pathname
 
   return (
     <aside className='hidden lg:block w-[330px] px-4 pb-4 pt-[6px]'>
@@ -57,8 +57,8 @@ function SideBarRight() {
           <div className='bg-gray-900 rounded-xl p-4 bg-transparent border border-solid border-[#2E3235]'>
             <h2 className='font-bold mb-2 text-[20px]'>Who to follow</h2>
             <div className='flex flex-col mt-3'>
-              {data?.data.data.users &&
-                data?.data.data.users.map((user: any) => (
+              {userSuggestionsQuery.data?.data.data.users &&
+                userSuggestionsQuery.data?.data.data.users.map((user: any) => (
                   <UserCard key={user.unfollowed_users._id} user={user.unfollowed_users} />
                 ))}
             </div>

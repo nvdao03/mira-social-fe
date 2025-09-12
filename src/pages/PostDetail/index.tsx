@@ -19,13 +19,18 @@ import { toast } from 'react-toastify'
 
 function PostDetail() {
   const { avatar, name } = useContext(AppContext)
-  const param = useParams()
+
   const queryClient = useQueryClient()
+
   const params: QueryConfig = useQueryParam()
+
   const queryConfig: QueryConfig = {
     limit: params.limit || 15,
     page: params.page || 1
   }
+
+  const param = useParams()
+
   const {
     register,
     handleSubmit,

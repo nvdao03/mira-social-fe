@@ -8,14 +8,14 @@ import { useParams } from 'react-router-dom'
 
 function ProfilePosts() {
   const params = useParams()
+  const queryClient = useQueryClient()
 
   const queryParams: QueryConfig = useQueryParam()
+
   const queryConfig: QueryConfig = {
     limit: queryParams.limit || 10,
     page: queryParams.page || 1
   }
-
-  const queryClient = useQueryClient()
 
   const postsUserQuery = useQuery({
     queryKey: ['profile_posts', params.user_id],
@@ -23,17 +23,15 @@ function ProfilePosts() {
     keepPreviousData: true
   })
 
-  const { data } = postsUserQuery
-
   return (
     <div className='relative mt-1'>
-      {data?.data.data.posts.length === 0 && (
+      {postsUserQuery.data?.data.data.posts.length === 0 && (
         <h3 className='absolute mt-[50px] md:mt-[40px] xl:mt-[40px] top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
           No posts
         </h3>
       )}
-      {data?.data.data.posts &&
-        data.data.data.posts.map((post: PostType) => {
+      {postsUserQuery.data?.data.data.posts &&
+        postsUserQuery.data.data.data.posts.map((post: PostType) => {
           return <Post post={post} key={post._id} queryClient={queryClient} />
         })}
     </div>

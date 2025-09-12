@@ -15,12 +15,6 @@ import type { PostType } from '../../types/post.type'
 import Loading from '../../components/Loading'
 
 function Home() {
-  const [isActive, setIsActive] = useState<string>('For you')
-  const [openSidebar, setOpenSidebar] = useState(false)
-  const [path, setPath] = useState<string>(PATH.HOME)
-
-  const navigate = useNavigate()
-
   const {
     id,
     avatar,
@@ -34,21 +28,26 @@ function Home() {
     setName
   } = useContext(AppContext)
 
+  const queryClient = useQueryClient()
+
+  const navigate = useNavigate()
+
   const queryParams: QueryConfig = useQueryParam()
+
   const queryConfig: QueryConfig = {
     limit: queryParams.limit || 10,
     page: queryParams.page || 1
   }
 
-  const queryClient = useQueryClient()
+  const [isActive, setIsActive] = useState<string>('For you')
+  const [openSidebar, setOpenSidebar] = useState(false)
+  const [path, setPath] = useState<string>(PATH.HOME)
 
   const postListQuery = useQuery({
     queryKey: ['posts', queryConfig],
     queryFn: () => postApi.getPosts(queryConfig),
     keepPreviousData: true
   })
-
-  const { data, isLoading } = postListQuery
 
   const logoutMutation = useMutation({
     mutationFn: (body: { refresh_token: string }) => authApi.logout(body)
@@ -69,6 +68,8 @@ function Home() {
       }
     )
   }
+
+  const { data, isLoading } = postListQuery
 
   return (
     <div className='relative pb-[45px] md:pb-[6px]'>

@@ -17,42 +17,19 @@ interface PropTypes {
 
 function Post({ post, queryClient }: PropTypes) {
   const { id } = useContext(AppContext)
+
+  const navigate = useNavigate()
+  const menuRef = useRef<HTMLDivElement | null>(null)
+
   const [isPlaying, setIsPlaying] = useState(false)
   const [isActiveLike, setIsActiveLike] = useState(false)
   const [isActiveBookmark, setIsActiveBookmark] = useState(false)
   const [open, setOpen] = useState(false)
   const [likeCount, setLikeCount] = useState(post.like_count)
   const [commentCount, setCommentCount] = useState(post.comment_count)
-  const navigate = useNavigate()
-  const menuRef = useRef<HTMLDivElement | null>(null)
 
   const likeToggle = useToggleMutation(likeApi.like, likeApi.unlike, queryClient)
   const bookmarkToggle = useToggleMutation(bookmarkApi.bookmark, bookmarkApi.unbookmark, queryClient)
-
-  useEffect(() => {
-    setIsActiveLike(!!post.isLiked) // !! Luôn trả về đúng giá trị gốc từ server trả về
-    setLikeCount(post.like_count)
-  }, [post.isLiked, post.like_count])
-
-  useEffect(() => {
-    setIsActiveBookmark(!!post.isBookmarked)
-  }, [post.isBookmarked])
-
-  useEffect(() => {
-    setCommentCount(post.comment_count)
-  }, [post.comment_count])
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
 
   const deletePostMutation = useMutation({
     mutationFn: (post_id: string) => {
@@ -83,6 +60,31 @@ function Post({ post, queryClient }: PropTypes) {
       }
     })
   }
+
+  useEffect(() => {
+    setIsActiveLike(!!post.isLiked)
+    setLikeCount(post.like_count)
+  }, [post.isLiked, post.like_count])
+
+  useEffect(() => {
+    setIsActiveBookmark(!!post.isBookmarked)
+  }, [post.isBookmarked])
+
+  useEffect(() => {
+    setCommentCount(post.comment_count)
+  }, [post.comment_count])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   // Lấy ra giá trị từ response trả về
   const images = post.medias.filter((item) => item.type === 0)

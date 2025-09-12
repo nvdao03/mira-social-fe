@@ -16,12 +16,16 @@ type UpdatePostFormData = UpdatePostFormValues
 
 export default function UpdatePost() {
   const { id } = useContext(AppContext)
-  const [medias, setMedias] = useState<{ url: string; type: number }[]>([])
+
   const navigate = useNavigate()
   const params = useParams()
+
+  const [medias, setMedias] = useState<{ url: string; type: number }[]>([])
+
   let images: { url: string; type: number }[] = useMemo(() => {
     return medias.filter((item) => item.type === 0)
   }, [medias])
+
   let videos: { url: string; type: number }[] = useMemo(() => {
     return medias.filter((item) => item.type === 1)
   }, [medias])
@@ -42,18 +46,6 @@ export default function UpdatePost() {
   })
 
   const content = watch('content')
-
-  useEffect(() => {
-    if (!getPostQuery.data?.data.data) return
-    getPostQuery.data.data.data.forEach((post: PostType) => {
-      setValue('type', 0)
-      setValue('parent_id', null)
-      setValue('user_id', id)
-      setValue('content', post.content)
-      setValue('medias', post.medias)
-      setMedias(post.medias as [])
-    })
-  }, [params.post_id, getPostQuery.data?.data.data])
 
   const uploadImageMutation = useMutation({
     mutationFn: (file: FormData) => fileApi.uploadImage(file)
@@ -100,6 +92,18 @@ export default function UpdatePost() {
       }
     })
   }
+
+  useEffect(() => {
+    if (!getPostQuery.data?.data.data) return
+    getPostQuery.data.data.data.forEach((post: PostType) => {
+      setValue('type', 0)
+      setValue('parent_id', null)
+      setValue('user_id', id)
+      setValue('content', post.content)
+      setValue('medias', post.medias)
+      setMedias(post.medias as [])
+    })
+  }, [params.post_id, getPostQuery.data?.data.data])
 
   const handleRemoveImage = () => {
     setMedias([])

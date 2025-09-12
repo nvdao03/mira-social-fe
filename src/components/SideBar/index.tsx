@@ -100,11 +100,15 @@ function SideBar() {
       <div className='relative mt-auto flex items-center gap-x-3 lg:p-3 lg:pt-[20px] transition-all rounded-[10px] duration-200 ease-in-out cursor-pointer group'>
         <div className='flex items-center gap-x-3'>
           <div className='w-10 h-10'>
-            <img src={avatar || AvatarDefault} alt='avatar' className='w-full h-full object-cover rounded-full' />
+            <img
+              src={avatar && avatar.trim() !== '' ? avatar : AvatarDefault}
+              alt='avatar'
+              className='w-full h-full object-cover rounded-full'
+            />
           </div>
           <div className='h-10 text-[15px] hidden lg:flex flex-col justify-between'>
-            <span className='font-semibold'>{name}</span>
-            <span className='text-[#71767B] text-xs'>@{username}</span>
+            <span className='font-semibold max-w-[150px] truncate leading-[1.5]'>{name}</span>
+            <span className='text-[#71767B] text-xs'>{username}</span>
           </div>
         </div>
         <div className='absolute bottom-[100%] left-0 z-50 w-60 rounded-lg hidden bg-black text-white lg:group-hover:block transition-all duration-200 ease-in-out shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)]'>
@@ -113,7 +117,7 @@ function SideBar() {
               onClick={handleLogout}
               className='w-full text-color_text text-left font-semibold p-4 cursor-pointer rounded-lg'
             >
-              Log out @{username}
+              Log out {username}
             </button>
           </div>
           <div className='absolute left-1/2 top-[48px] border-t-8 border-r-8 border-solid border-black rotate-45 shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)]'></div>

@@ -8,21 +8,20 @@ import type { PostType } from '../../types/post.type'
 import Post from '../../components/Post'
 
 function Bookmark() {
+  const queryClient = useQueryClient()
+
   const queryParams: QueryConfig = useQueryParam()
+
   const queryConfig: QueryConfig = {
     limit: queryParams.limit || 10,
     page: queryParams.page || 1
   }
-
-  const queryClient = useQueryClient()
 
   const bookmarkQuery = useQuery({
     queryKey: ['bookmarks', queryConfig],
     queryFn: () => bookmarkApi.getBookmarks(queryConfig),
     keepPreviousData: true
   })
-
-  const { data } = bookmarkQuery
 
   return (
     <div className='pb-[45px] md:pb-[5px]'>
@@ -38,14 +37,14 @@ function Bookmark() {
         <h3 className='text-color_auth text-[18px] font-semibold ml-3'>Bookmarks</h3>
       </div>
       {/* Posts */}
-      {data?.data.data.posts.length === 0 && (
+      {bookmarkQuery.data?.data.data.posts.length === 0 && (
         <h3 className='absolute top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
           No bookmarks
         </h3>
       )}
-      {data?.data.data.posts && (
+      {bookmarkQuery.data?.data.data.posts && (
         <div className=''>
-          {data.data.data.posts.map((post: PostType) => (
+          {bookmarkQuery.data.data.data.posts.map((post: PostType) => (
             <Post key={post._id} post={post} queryClient={queryClient} />
           ))}
         </div>

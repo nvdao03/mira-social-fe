@@ -10,13 +10,17 @@ import { useContext, useMemo, useState } from 'react'
 import { AppContext } from '../../contexts/app.context'
 import { toast } from 'react-toastify'
 import postApi from '../../apis/post.api'
+import { MESSAGE } from '../../constants/message'
 
 type CreatePostFormData = CreatePostFormValues
 
 export default function CreatePost() {
   const { id } = useContext(AppContext)
+
   const navigate = useNavigate()
+
   const [medias, setMedias] = useState<{ url: string; type: number }[]>([])
+
   let images: { url: string; type: number }[] = useMemo(() => {
     return medias.filter((item) => item.type === 0)
   }, [medias])
@@ -67,7 +71,7 @@ export default function CreatePost() {
         setValue('medias', newMedias)
       },
       onError: () => {
-        toast.warn('Maximum 1 image allowed')
+        toast.warn(MESSAGE.MAX_FILE)
       }
     })
   }
@@ -121,7 +125,6 @@ export default function CreatePost() {
                   }}
                 >
                   <source src={videos[0].url} type='video/mp4' />
-                  Your browser does not support HTML5 video.
                 </video>
                 <button
                   onClick={() => setMedias([])}

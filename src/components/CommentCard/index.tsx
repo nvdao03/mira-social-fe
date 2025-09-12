@@ -12,23 +12,17 @@ interface PropTypes {
 
 function CommentCard({ comment, post_id }: PropTypes) {
   const { id } = useContext(AppContext)
-  const [open, setOpen] = useState<boolean>(false)
-  const menuRef = useRef<HTMLDivElement | null>(null) // Lấy ra button để làm việc với DOM
+
   const queryClient = useQueryClient()
+
+  const menuRef = useRef<HTMLDivElement | null>(null)
+  const [open, setOpen] = useState<boolean>(false)
+
   const commentMutation = useMutation({
     mutationFn: (comment_id: string) => {
       return commentApi.deleteComment(comment_id)
     }
   })
-
-  const handleDeleteComment = (comment_id: string) => {
-    commentMutation.mutate(comment_id, {
-      onSuccess: () => {
-        setOpen(false)
-        queryClient.invalidateQueries({ queryKey: ['comments', post_id] })
-      }
-    })
-  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -42,6 +36,15 @@ function CommentCard({ comment, post_id }: PropTypes) {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  const handleDeleteComment = (comment_id: string) => {
+    commentMutation.mutate(comment_id, {
+      onSuccess: () => {
+        setOpen(false)
+        queryClient.invalidateQueries({ queryKey: ['comments', post_id] })
+      }
+    })
+  }
 
   return (
     <div className='flex items-start px-4 py-5 gap-x-3 border-b border-solid border-[#2e3235]'>

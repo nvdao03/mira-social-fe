@@ -10,5 +10,6 @@ export const MESSAGE = {
   LOGOUT_SUCCESSFULLY: 'Logout successfully',
   LOGIN_SUCCESSFULLY: 'Login successfully',
   CREATE_ACCOUNT_SUCCESSFULLY: 'Create account successfully',
-  UPDATE_PROFILE_SUCCESSFULLY: 'Update profile successfully'
+  UPDATE_PROFILE_SUCCESSFULLY: 'Update profile successfully',
+  MAX_FILE: 'Maximum 1 image allowed'
 }

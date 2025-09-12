@@ -9,6 +9,7 @@ import Loading from '../../components/Loading'
 
 export default function Connect() {
   const queryParams: QueryConfig = useQueryParam()
+
   const queryConfig: QueryConfig = {
     limit: queryParams.limit || 20,
     page: queryParams.page || 1

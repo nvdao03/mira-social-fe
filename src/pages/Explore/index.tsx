@@ -8,9 +8,10 @@ import Loading from '../../components/Loading'
 import UserCardFollow from '../Follow/components/UserCardFollow'
 
 export default function Explore() {
+  const queryParam: QueryConfig = useQueryParam()
+
   const { register, watch } = useForm()
 
-  const queryParam: QueryConfig = useQueryParam()
   const key = watch('key')
 
   const queryConfig: QueryConfig = {

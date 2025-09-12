@@ -15,47 +15,29 @@ interface PropTypes {
 
 function UserCardFollow({ user, type }: PropTypes) {
   const { id } = useContext(AppContext)
-  const navigate = useNavigate()
+
   const queryClient = useQueryClient()
-  const params = useParams()
-  // Thay đổi text following || unfollow
-  const [isHovered, setIsHovered] = useState<boolean>(false)
-  // Thay đổi text following || follow back
-  const [isFollowing, setIsFollowing] = useState<boolean>(false)
-  // Check điều kiện phải là đang ở trang profile của user login thì mới hiện các nút following || unfollow hoặc follow back
-  const isUserProfile = Boolean(params.user_id === id)
 
   const queryParams: QueryConfig = useQueryParam()
+
   const queryConfig: QueryConfig = {
     page: queryParams.page || 1,
     limit: queryParams.limit || 100
   }
+
+  const navigate = useNavigate()
+  const params = useParams()
+
+  const [isHovered, setIsHovered] = useState<boolean>(false) // Thay đổi text following || unfollow
+  const [isFollowing, setIsFollowing] = useState<boolean>(false) // Thay đổi text following || follow back
+
+  const isUserProfile = Boolean(params.user_id === id) // Check điều kiện phải là đang ở trang profile của user login thì mới hiện các nút following || unfollow hoặc follow back
 
   const getFollowingsQuery = useQuery({
     queryKey: ['followings', params.user_id],
     queryFn: () => followApi.getFollowings(params.user_id as string, queryConfig),
     keepPreviousData: true
   })
-
-  // Xử lý nếu params thay đổi sẽ gọi lại call back
-  useEffect(() => {
-    if (!getFollowingsQuery.data?.data.data.followers.length) {
-      return
-    }
-    // Mảng lưu danh sách id của những người mà ta đã follow
-    const user_ids_following = getFollowingsQuery.data?.data.data.followers.map((user: any) => {
-      return user.user_followings._id
-    })
-    // Check điều kiện, nếu user này ta đã follow nó rồi thì hiển thị followings, nếu chưa follow nó thì hiển thị follow back
-    const isFollowBack: boolean = user_ids_following.some((user_id_following: string) => {
-      // Kiểm tra thằng user card đang được render, id của nó có trong danh sách những id user mình đã follow hay không
-      return user_id_following === user._id
-    })
-    // Nếu thằng user card đang được render, nó nằm trong danh sách những id user mình follow, thì hiển thị chữ following, ngọc lập thì hiển thị follow back
-    if (isFollowBack) {
-      setIsFollowing(true)
-    }
-  }, [params.user_id, getFollowingsQuery.data, user._id])
 
   const unfollowMutation = useMutation({
     mutationFn: (user_id: string) => {
@@ -90,6 +72,26 @@ function UserCardFollow({ user, type }: PropTypes) {
       }
     })
   }
+
+  // Xử lý nếu params thay đổi sẽ gọi lại call back
+  useEffect(() => {
+    if (!getFollowingsQuery.data?.data.data.followers.length) {
+      return
+    }
+    // Mảng lưu danh sách id của những người mà ta đã follow
+    const user_ids_following = getFollowingsQuery.data?.data.data.followers.map((user: any) => {
+      return user.user_followings._id
+    })
+    // Check điều kiện, nếu user này ta đã follow nó rồi thì hiển thị followings, nếu chưa follow nó thì hiển thị follow back
+    const isFollowBack: boolean = user_ids_following.some((user_id_following: string) => {
+      // Kiểm tra thằng user card đang được render, id của nó có trong danh sách những id user mình đã follow hay không
+      return user_id_following === user._id
+    })
+    // Nếu thằng user card đang được render, nó nằm trong danh sách những id user mình follow, thì hiển thị chữ following, ngọc lập thì hiển thị follow back
+    if (isFollowBack) {
+      setIsFollowing(true)
+    }
+  }, [params.user_id, getFollowingsQuery.data, user._id])
 
   return (
     <div onClick={() => navigate(`/${user._id}`)} className='flex items-center justify-between py-4 cursor-pointer'>

@@ -10,13 +10,16 @@ import { toast } from 'react-toastify'
 import { MESSAGE } from '../../constants/message'
 import { AppContext } from '../../contexts/app.context'
 import type { ProfileType } from '../../types/user.type'
+import { saveAvatarFromLocalStorage, saveNameFromLocalStorage } from '../../utils/auth'
 
 type UpdateProfileFormData = UpdateProfileFormValues
 
 export default function UpdateProfile() {
   const { setAvatar, setName } = useContext(AppContext)
+
   const params = useParams()
   const navidate = useNavigate()
+
   const [avatarImage, setAvatarImage] = useState<string>('')
   const [coverPhoto, setCoverPhoto] = useState<string>('')
 
@@ -61,12 +64,13 @@ export default function UpdateProfile() {
   }
 
   const handleUpdateProfile = handleSubmit((data) => {
-    console.log(data)
     updateProfileMutation.mutate(data, {
       onSuccess: (data) => {
         toast.success(MESSAGE.UPDATE_PROFILE_SUCCESSFULLY)
         setAvatar(data.data.data.avatar)
         setName(data.data.data.name)
+        saveAvatarFromLocalStorage(data.data.data.avatar)
+        saveNameFromLocalStorage(data.data.data.name)
         setAvatarImage('')
         setCoverPhoto('')
         navidate(`/${params.user_id}`)
