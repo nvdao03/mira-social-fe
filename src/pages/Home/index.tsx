@@ -41,7 +41,6 @@ function Home() {
 
   const [isActive, setIsActive] = useState<string>('For you')
   const [openSidebar, setOpenSidebar] = useState(false)
-  const [path, setPath] = useState<string>(PATH.HOME)
 
   const postListQuery = useQuery({
     queryKey: ['posts', queryConfig],
@@ -98,7 +97,6 @@ function Home() {
             <Link
               to={sidebar.path === PATH.PROFILE ? `/${id}` : sidebar.path}
               key={sidebar.id}
-              onClick={() => setPath(sidebar.path)}
               className={`py-4 flex items-center space-x-5 hover:bg-[#E7E9EA1A]`}
             >
               <svg

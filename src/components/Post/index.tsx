@@ -21,7 +21,7 @@ function Post({ post, queryClient }: PropTypes) {
   const navigate = useNavigate()
   const menuRef = useRef<HTMLDivElement | null>(null)
 
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [, setIsPlaying] = useState(false)
   const [isActiveLike, setIsActiveLike] = useState(false)
   const [isActiveBookmark, setIsActiveBookmark] = useState(false)
   const [open, setOpen] = useState(false)
