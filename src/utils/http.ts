@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import {
   getAccessTokenFromLocalStorage,
@@ -21,8 +21,6 @@ import {
   saveUsernameFromLocalStorage
 } from './auth'
 
-const URL = import.meta.env.VITE_URL_BE_LOCAL
-
 class Http {
   instance: AxiosInstance
   private access_token: string
@@ -40,7 +38,7 @@ class Http {
     this.name = getNameFromLocalStorage()
     this.id = getIdFromLocalStorage()
     this.instance = axios.create({
-      baseURL: URL,
+      baseURL: 'http://localhost:4000',
       timeout: 10000
     })
     this.instance.interceptors.request.use(
