@@ -31,19 +31,27 @@ function Home() {
 
   const navigate = useNavigate()
 
-  const [isActive, setIsActive] = useState<string>('For you')
+  const [isActive, setIsActive] = useState<'For you' | 'Followings'>('For you')
   const [openSidebar, setOpenSidebar] = useState(false)
 
   const postListQuery = useInfiniteQuery({
-    queryKey: ['posts'],
+    queryKey: ['posts', isActive],
     // Khi dùng useInfiniteQuery nó chỉ nhận tham số pageParam dùng để tính toán page tiếp theo, chứ ko truyền cứng giá trị page bàng paramConfig được
     queryFn: ({ pageParam = 1 }) => {
-      return postApi.getPosts({
-        page: pageParam,
-        limit: 10
-      })
+      if (isActive === 'For you') {
+        return postApi.getPosts({
+          page: pageParam,
+          limit: 10
+        })
+      } else {
+        return postApi.getPostFollwing({
+          page: pageParam,
+          limit: 10
+        })
+      }
     },
     getNextPageParam: (lastPage) => {
+      console.log(lastPage)
       const { pagination } = lastPage.data.data
       return pagination.page < pagination.total_page ? pagination.page + 1 : undefined
     }
@@ -144,20 +152,19 @@ function Home() {
           </Link>
         </div>
         <div className='flex-1 flex items-center justify-around text-[15px] text-[#71767B]'>
-          {['For you', 'Following'].map((item, index) => (
-            <Link
-              to={''}
-              key={index}
+          {['For you', 'Followings'].map((tab) => (
+            <button
+              key={tab}
               className={`py-4 md:py-5 cursor-pointer ${
-                isActive === item
+                isActive === tab
                   ? 'relative text-[#E7E9EA] font-semibold transition-all duration-200 ease-in-out after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-[#1d9bf0] after:rounded-full'
                   : ''
               }
               `}
-              onClick={() => setIsActive(item)}
+              onClick={() => setIsActive(tab as 'For you' | 'Followings')}
             >
-              {item}
-            </Link>
+              {tab}
+            </button>
           ))}
         </div>
       </header>
@@ -169,21 +176,27 @@ function Home() {
           </div>
         )}
         {!isLoading && (
-          <InfiniteScroll
-            dataLength={posts.length} // tổng số posts đã load
-            next={fetchNextPage} // gọi hàm load thêm
-            hasMore={!!hasNextPage} // kiểm soát còn trang không
-            loader={
-              <div className='flex justify-center items-center py-4 min-h-[80px]'>
-                <Loading />
+          <>
+            {posts.length === 0 && (
+              <div className='flex-1 flex items-center justify-center min-h-[calc(100vh-150px)] lg:min-h-[calc(100vh-70px)]'>
+                <span>No post</span>
               </div>
-            }
-            endMessage={<p className='text-center text-[#71767B] py-4'>End 👀</p>}
-          >
-            {posts.map((post: PostType) => (
-              <Post key={post._id} post={post} queryClient={queryClient} />
-            ))}
-          </InfiniteScroll>
+            )}
+            <InfiniteScroll
+              dataLength={posts.length} // tổng số posts đã load
+              next={fetchNextPage} // gọi hàm load thêm
+              hasMore={!!hasNextPage} // kiểm soát còn trang không
+              loader={
+                <div className='flex justify-center items-center py-4 min-h-[80px]'>
+                  <Loading />
+                </div>
+              }
+            >
+              {posts.map((post: PostType) => (
+                <Post key={post._id} post={post} queryClient={queryClient} />
+              ))}
+            </InfiniteScroll>
+          </>
         )}
       </div>
     </div>
