@@ -1,27 +1,30 @@
 import { Link } from 'react-router-dom'
 import { PATH } from '../../constants/path'
-import useQueryParam from '../../hooks/useQueryParam'
-import type { QueryConfig } from '../../configs/query.config'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { userApi } from '../../apis/user.api'
 import UserCard from '../../components/UserCard'
 import Loading from '../../components/Loading'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 export default function Connect() {
-  const queryParams: QueryConfig = useQueryParam()
-
-  const queryConfig: QueryConfig = {
-    limit: queryParams.limit || 20,
-    page: queryParams.page || 1
-  }
-
-  const getUserSuggestionsQuery = useQuery({
+  const getUserSuggestionsQuery = useInfiniteQuery({
     queryKey: ['user_suggestions_connect'],
-    queryFn: () => userApi.getUserSuggestions(queryConfig),
-    keepPreviousData: true
+    queryFn: ({ pageParam = 1 }) => {
+      return userApi.getUserSuggestions({
+        page: pageParam,
+        limit: 10
+      })
+    },
+    keepPreviousData: true,
+    getNextPageParam: (lastPage) => {
+      const { pagination } = lastPage.data.data
+      return pagination.page < pagination.total_page ? pagination.page + 1 : undefined
+    }
   })
 
-  const { data, isLoading } = getUserSuggestionsQuery
+  const { data, isLoading, fetchNextPage, hasNextPage } = getUserSuggestionsQuery
+
+  const userList = data?.pages.flatMap((page) => page.data.data.users) || []
 
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
@@ -44,12 +47,23 @@ export default function Connect() {
           </div>
         )}
         {!isLoading && (
-          <div className='flex flex-col'>
-            {data?.data.data.users &&
-              data?.data.data.users.map((user: any) => (
+          <InfiniteScroll
+            dataLength={userList.length}
+            next={fetchNextPage}
+            hasMore={!!hasNextPage}
+            loader={
+              <div className='flex justify-center items-center py-4 min-h-[80px]'>
+                <Loading />
+              </div>
+            }
+            endMessage={<p className='text-center text-[#71767B] py-4'>End 👀</p>}
+          >
+            <div className='flex flex-col'>
+              {userList.map((user: any) => (
                 <UserCard key={user.unfollowed_users._id} user={user.unfollowed_users} />
               ))}
-          </div>
+            </div>
+          </InfiniteScroll>
         )}
       </div>
     </div>

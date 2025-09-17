@@ -5,14 +5,13 @@ import Logo from '../../assets/imgs/logo.png'
 import { AppContext } from '../../contexts/app.context'
 import { PATH } from '../../constants/path'
 import { sidebars } from '../../data/sidebars'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
-import type { QueryConfig } from '../../configs/query.config'
-import useQueryParam from '../../hooks/useQueryParam'
 import postApi from '../../apis/post.api'
 import Post from '../../components/Post'
 import type { PostType } from '../../types/post.type'
 import Loading from '../../components/Loading'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 function Home() {
   const {
@@ -32,20 +31,22 @@ function Home() {
 
   const navigate = useNavigate()
 
-  const queryParams: QueryConfig = useQueryParam()
-
-  const queryConfig: QueryConfig = {
-    limit: queryParams.limit || 10,
-    page: queryParams.page || 1
-  }
-
   const [isActive, setIsActive] = useState<string>('For you')
   const [openSidebar, setOpenSidebar] = useState(false)
 
-  const postListQuery = useQuery({
-    queryKey: ['posts', queryConfig],
-    queryFn: () => postApi.getPosts(queryConfig),
-    keepPreviousData: true
+  const postListQuery = useInfiniteQuery({
+    queryKey: ['posts'],
+    // Khi dùng useInfiniteQuery nó chỉ nhận tham số pageParam dùng để tính toán page tiếp theo, chứ ko truyền cứng giá trị page bàng paramConfig được
+    queryFn: ({ pageParam = 1 }) => {
+      return postApi.getPosts({
+        page: pageParam,
+        limit: 10
+      })
+    },
+    getNextPageParam: (lastPage) => {
+      const { pagination } = lastPage.data.data
+      return pagination.page < pagination.total_page ? pagination.page + 1 : undefined
+    }
   })
 
   const logoutMutation = useMutation({
@@ -68,7 +69,9 @@ function Home() {
     )
   }
 
-  const { data, isLoading } = postListQuery
+  const { data, isLoading, fetchNextPage, hasNextPage } = postListQuery
+
+  const posts: PostType[] = data?.pages.flatMap((page) => page.data.data.posts) || []
 
   return (
     <div className='relative pb-[45px] md:pb-[6px]'>
@@ -165,9 +168,23 @@ function Home() {
             <Loading />
           </div>
         )}
-        {!isLoading &&
-          data?.data.data.posts &&
-          data?.data.data.posts.map((post: PostType) => <Post key={post._id} post={post} queryClient={queryClient} />)}
+        {!isLoading && (
+          <InfiniteScroll
+            dataLength={posts.length} // tổng số posts đã load
+            next={fetchNextPage} // gọi hàm load thêm
+            hasMore={!!hasNextPage} // kiểm soát còn trang không
+            loader={
+              <div className='flex justify-center items-center py-4 min-h-[80px]'>
+                <Loading />
+              </div>
+            }
+            endMessage={<p className='text-center text-[#71767B] py-4'>End 👀</p>}
+          >
+            {posts.map((post: PostType) => (
+              <Post key={post._id} post={post} queryClient={queryClient} />
+            ))}
+          </InfiniteScroll>
+        )}
       </div>
     </div>
   )
