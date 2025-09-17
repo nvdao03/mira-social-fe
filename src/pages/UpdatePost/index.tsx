@@ -11,6 +11,7 @@ import { AppContext } from '../../contexts/app.context'
 import { toast } from 'react-toastify'
 import postApi from '../../apis/post.api'
 import type { PostType } from '../../types/post.type'
+import Loading from '../../components/Loading'
 
 type UpdatePostFormData = UpdatePostFormValues
 
@@ -110,6 +111,8 @@ export default function UpdatePost() {
     setValue('medias', [])
   }
 
+  const isUploading = uploadImageMutation.isPending || uploadVideoMutation.isPending
+
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
       {/* Header */}
@@ -139,6 +142,11 @@ export default function UpdatePost() {
               placeholder="What's happening?"
             ></textarea>
             {/* Media preview */}
+            {isUploading && (
+              <div className='w-full h-full flex justify-center items-center'>
+                <Loading />
+              </div>
+            )}
             {videos.length === 1 && (
               <div className='relative rounded-2xl border border-[#2E3235]'>
                 <video
@@ -205,6 +213,7 @@ export default function UpdatePost() {
                         })
                         handleUploadImage(formData)
                       }
+                      e.target.value = ''
                     }}
                   />
                 </label>
@@ -223,6 +232,7 @@ export default function UpdatePost() {
                         formData.append('video', file)
                         handleUploadVideo(formData)
                       }
+                      e.target.value = ''
                     }}
                   />
                 </label>

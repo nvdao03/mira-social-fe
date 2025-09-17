@@ -11,6 +11,7 @@ import { AppContext } from '../../contexts/app.context'
 import { toast } from 'react-toastify'
 import postApi from '../../apis/post.api'
 import { MESSAGE } from '../../constants/message'
+import Loading from '../../components/Loading'
 
 type CreatePostFormData = CreatePostFormValues
 
@@ -90,6 +91,10 @@ export default function CreatePost() {
     })
   }
 
+  const isUploading = uploadImageMutation.isPending || uploadVideoMutation.isPending
+
+  console.log(medias)
+
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
       {/* Header */}
@@ -119,6 +124,11 @@ export default function CreatePost() {
               placeholder="What's happening?"
             ></textarea>
             {/* Media preview */}
+            {isUploading && (
+              <div className='w-full h-full flex justify-center items-center'>
+                <Loading />
+              </div>
+            )}
             {videos.length === 1 && (
               <div className='relative rounded-2xl border border-[#2E3235]'>
                 <video
@@ -184,6 +194,7 @@ export default function CreatePost() {
                         })
                         handleUploadImage(formData)
                       }
+                      e.target.value = ''
                     }}
                   />
                 </label>
@@ -202,6 +213,7 @@ export default function CreatePost() {
                         formData.append('video', file)
                         handleUploadVideo(formData)
                       }
+                      e.target.value = ''
                     }}
                   />
                 </label>

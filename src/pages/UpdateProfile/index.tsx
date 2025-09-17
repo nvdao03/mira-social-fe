@@ -11,6 +11,7 @@ import { MESSAGE } from '../../constants/message'
 import { AppContext } from '../../contexts/app.context'
 import type { ProfileType } from '../../types/user.type'
 import { saveAvatarFromLocalStorage, saveNameFromLocalStorage } from '../../utils/auth'
+import Loading from '../../components/Loading'
 
 type UpdateProfileFormData = UpdateProfileFormValues
 
@@ -99,6 +100,9 @@ export default function UpdateProfile() {
     }
   }, [params.user_id, getProfileQuery.data?.data.data])
 
+  const upLoadingAvatar = uploadAvatarMutation.isPending
+  const upLoadingCoverPhoto = uploadCoverPhotoMutation.isPending
+
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
       {/* Header */}
@@ -136,6 +140,7 @@ export default function UpdateProfile() {
                     formData.append('image', file)
                     handleUploadCoverPhoto(formData)
                   }
+                  e.target.value = ''
                 }}
               />
               <div className='w-[40px] h-[40px] bg-[#16191B] flex justify-center items-center rounded-full'>
@@ -160,17 +165,27 @@ export default function UpdateProfile() {
                 </svg>
               </button>
             )}
+            {upLoadingCoverPhoto && (
+              <div className='absolute inset-0 bg-black/40 flex items-center justify-center rounded-md'>
+                <Loading />
+              </div>
+            )}
           </div>
           {/* Avatar */}
           <div className='absolute -bottom-12 left-4'>
             <div className='relative bg-slate-400 rounded-full'>
               <label className='cursor-pointer'>
-                <div className='w-[94px] h-[94px] md:w-[120px] md:h-[120px]'>
+                <div className='relative w-[94px] h-[94px] md:w-[120px] md:h-[120px]'>
                   <img
                     src={avatarImage || AvatarDefault}
                     alt='avatar'
                     className='w-full h-full object-cover rounded-full'
                   />
+                  {upLoadingAvatar && (
+                    <div className='absolute inset-0 bg-black/40 flex items-center justify-center rounded-full'>
+                      <Loading />
+                    </div>
+                  )}
                 </div>
                 <input
                   className='hidden'
@@ -185,6 +200,7 @@ export default function UpdateProfile() {
                       formData.append('image', file)
                       handleUploadAvatar(formData)
                     }
+                    e.target.value = ''
                   }}
                 />
                 <div className='absolute bottom-0 right-0 w-[40px] h-[40px] bg-[#16191B] flex justify-center items-center rounded-full'>

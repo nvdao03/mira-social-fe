@@ -39,7 +39,7 @@ class Http {
     this.id = getIdFromLocalStorage()
     this.instance = axios.create({
       baseURL: 'http://localhost:4000',
-      timeout: 10000
+      timeout: 20000
     })
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {

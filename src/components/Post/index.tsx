@@ -136,7 +136,7 @@ function Post({ post, queryClient }: PropTypes) {
                 </g>
               </svg>
             </div>
-            <span>@{post.users.username}</span>
+            <span>{post.users.username}</span>
             <span>·</span>
             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           </Link>

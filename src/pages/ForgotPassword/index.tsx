@@ -1,4 +1,4 @@
-import { set, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import InputAuth from '../../components/InputAuth'
 import Logo from '../../assets/imgs/logo.png'
 import { yupResolver } from '@hookform/resolvers/yup'
