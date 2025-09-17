@@ -17,5 +17,17 @@ export const authApi = {
   },
   changePassword(body: ChangePasswordFormData) {
     return http.post('/auth/change-password', body)
+  },
+  verifyEmail: (body: { email_verify_token: string }) => {
+    return http.post('/auth/verify-email', body)
+  },
+  forgotPassword: (body: { email: string }) => {
+    return http.post('/auth/forgot-password', body)
+  },
+  verifyForgotPassword: (body: { forgot_password_token: string }) => {
+    return http.post('/auth/verify-forgot-password', body)
+  },
+  resetPassword: (body: { forgot_password_token: string; password: string; confirm_password: string }) => {
+    return http.post('/auth/reset-password', body)
   }
 }

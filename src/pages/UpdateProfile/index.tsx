@@ -74,6 +74,10 @@ export default function UpdateProfile() {
         setAvatarImage('')
         setCoverPhoto('')
         navidate(`/${params.user_id}`)
+      },
+      onError(error: any) {
+        const message = error.response.data.message
+        toast.warn(message)
       }
     })
   })

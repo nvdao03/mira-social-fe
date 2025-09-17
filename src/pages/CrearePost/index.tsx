@@ -59,6 +59,10 @@ export default function CreatePost() {
       onSuccess: () => {
         ;(toast.success('Create Post Successfully'), reset(), setMedias([]))
         navigate(PATH.HOME)
+      },
+      onError(error: any) {
+        const message = error.response.data.message
+        toast.warn(message)
       }
     })
   })

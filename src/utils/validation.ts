@@ -80,6 +80,26 @@ export const schemaChangePassword = yup.object({
     .oneOf([yup.ref('new_password')], MESSAGE.CONFIRM_PASSWORD_NOT_MATCH)
 })
 
+export const schemaResetPassword = yup.object({
+  password: yup
+    .string()
+    .trim()
+    .required(MESSAGE.PASSWORD_REQUIRED)
+    .min(6, MESSAGE.PASSWORD_LENGTH)
+    .max(180, MESSAGE.PASSWORD_LENGTH),
+  confirm_password: yup
+    .string()
+    .trim()
+    .required(MESSAGE.CONFIRM_PASSWORD_REQUIRED)
+    .min(6, MESSAGE.CONFIRM_PASSWORD_LENGTH)
+    .max(180, MESSAGE.CONFIRM_PASSWORD_LENGTH)
+    .oneOf([yup.ref('password')], MESSAGE.CONFIRM_PASSWORD_NOT_MATCH)
+})
+
+export const schemaForgotPassword = yup.object({
+  email: yup.string().email(MESSAGE.EMAIL_INVALID).required(MESSAGE.EMAIL_REQUIRED)
+})
+
 export type SignInFormValues = yup.InferType<typeof schemaSignIn>
 export type SignUpFormValues = yup.InferType<typeof schemaSignUp>
 export type AddCommentFormValues = yup.InferType<typeof schemaAddComment>
@@ -87,3 +107,5 @@ export type CreatePostFormValues = yup.InferType<typeof schemaCreatePost>
 export type UpdatePostFormValues = yup.InferType<typeof schemaUpdatePost>
 export type UpdateProfileFormValues = yup.InferType<typeof schemaUpdateProfile>
 export type ChangePasswordFormValues = yup.InferType<typeof schemaChangePassword>
+export type ForgotPasswordFormValues = yup.InferType<typeof schemaForgotPassword>
+export type ResetPasswordFormValues = yup.InferType<typeof schemaResetPassword>

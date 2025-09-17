@@ -17,5 +17,6 @@ export const MESSAGE = {
   CREATE_ACCOUNT_SUCCESSFULLY: 'Create account successfully',
   UPDATE_PROFILE_SUCCESSFULLY: 'Update profile successfully',
   CHANGE_PASSWORD_SUCCESSFULLY: 'Change password successfully',
-  MAX_FILE: 'Maximum 1 image allowed'
+  MAX_FILE: 'Maximum 1 image allowed',
+  FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required'
 }

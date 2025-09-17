@@ -65,12 +65,13 @@ function SignUp() {
               type: 'Server'
             })
           }
-          if (formError.username) {
-            setError('username', {
-              message: formError.username.message,
-              type: 'Server'
-            })
-          }
+        }
+        if (error.response.status === HTTP_STATUS.SERVER_ERROR) {
+          const message = error.response.data.message
+          setError('username', {
+            message: message,
+            type: 'Server'
+          })
         }
       }
     })

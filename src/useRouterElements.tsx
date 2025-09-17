@@ -18,6 +18,10 @@ import UpdateProfile from './pages/UpdateProfile'
 import Explore from './pages/Explore'
 import Connect from './pages/Connect'
 import ChangePassword from './pages/Setting/ChangePassword'
+import VerifyEmail from './pages/VerifyEmail'
+import VerifyForgotPassword from './pages/VerifyForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import ForgotPassword from './pages/ForgotPassword'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -152,6 +156,38 @@ function useRouterElements() {
           )
         }
       ]
+    },
+    {
+      path: PATH.VERIFY_EMAIL,
+      element: (
+        <AuthLayout>
+          <VerifyEmail />
+        </AuthLayout>
+      )
+    },
+    {
+      path: PATH.FORGOT_PASSWORD,
+      element: (
+        <AuthLayout>
+          <ForgotPassword />
+        </AuthLayout>
+      )
+    },
+    {
+      path: PATH.VERIFY_FORGOT_PASSWORD,
+      element: (
+        <AuthLayout>
+          <VerifyForgotPassword />
+        </AuthLayout>
+      )
+    },
+    {
+      path: PATH.RESET_PASSWORD,
+      element: (
+        <AuthLayout>
+          <ResetPassword />
+        </AuthLayout>
+      )
     }
   ])
   return routerElements
