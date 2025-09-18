@@ -56,7 +56,7 @@ export default function Connect() {
                 <Loading />
               </div>
             }
-            endMessage={<p className='text-center text-[#71767B] py-4'>End 👀</p>}
+            // endMessage={<p className='text-center text-[#71767B] py-4'>End 👀</p>}
           >
             <div className='flex flex-col'>
               {userList.map((user: any) => (

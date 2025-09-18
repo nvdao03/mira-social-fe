@@ -70,7 +70,7 @@ function CommentCard({ comment, post_id }: PropTypes) {
               </g>
             </svg>
           )}
-          <span className='text-[#71767B] text-[15px] truncate max-w-[100px] ml-2'>@{comment.user.username}</span>
+          <span className='text-[#71767B] text-[15px] truncate max-w-[100px] ml-2'>{comment.user.username}</span>
           <span className='text-[#71767B] text-[15px] mx-1'>·</span>
           <span className='text-[#71767B] text-[15px]'>{new Date(comment.createdAt).toLocaleDateString()}</span>
         </div>
