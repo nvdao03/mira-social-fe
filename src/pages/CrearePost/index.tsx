@@ -93,8 +93,6 @@ export default function CreatePost() {
 
   const isUploading = uploadImageMutation.isPending || uploadVideoMutation.isPending
 
-  console.log(medias)
-
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
       {/* Header */}

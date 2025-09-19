@@ -51,7 +51,6 @@ function Home() {
       }
     },
     getNextPageParam: (lastPage) => {
-      console.log(lastPage)
       const { pagination } = lastPage.data.data
       return pagination.page < pagination.total_page ? pagination.page + 1 : undefined
     }

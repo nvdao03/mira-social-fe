@@ -21,6 +21,8 @@ import {
   saveUsernameFromLocalStorage
 } from './auth'
 
+const URL = import.meta.env.VITE_API_ROOT
+
 class Http {
   instance: AxiosInstance
   private access_token: string
@@ -38,8 +40,8 @@ class Http {
     this.name = getNameFromLocalStorage()
     this.id = getIdFromLocalStorage()
     this.instance = axios.create({
-      baseURL: 'http://localhost:4000',
-      timeout: 20000
+      baseURL: URL,
+      timeout: 60000
     })
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
