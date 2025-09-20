@@ -13,6 +13,8 @@ export const PATH = {
   RESET_PASSWORD: '/reset-password',
   EXPLORE: '/explore',
   CONNECT: '/connect',
+  PRIVACY_POLICY: '/privacy-policy',
+  TERMS_OF_SERVICE: '/terms-of-service',
   VERIFY_EMAIL: '/verify-email',
   NOT_FOUND: '/404',
 

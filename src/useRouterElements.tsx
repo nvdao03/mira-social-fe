@@ -22,6 +22,8 @@ import VerifyEmail from './pages/VerifyEmail'
 import VerifyForgotPassword from './pages/VerifyForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import ForgotPassword from './pages/ForgotPassword'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsOfService from './pages/TermsOfService'
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -186,6 +188,22 @@ function useRouterElements() {
       element: (
         <AuthLayout>
           <ResetPassword />
+        </AuthLayout>
+      )
+    },
+    {
+      path: PATH.PRIVACY_POLICY,
+      element: (
+        <AuthLayout>
+          <PrivacyPolicy />
+        </AuthLayout>
+      )
+    },
+    {
+      path: PATH.TERMS_OF_SERVICE,
+      element: (
+        <AuthLayout>
+          <TermsOfService />
         </AuthLayout>
       )
     }
