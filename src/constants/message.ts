@@ -18,5 +18,6 @@ export const MESSAGE = {
   UPDATE_PROFILE_SUCCESSFULLY: 'Update profile successfully',
   CHANGE_PASSWORD_SUCCESSFULLY: 'Change password successfully',
   MAX_FILE: 'Maximum 1 image allowed',
-  FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required'
+  FORGOT_PASSWORD_TOKEN_REQUIRED: 'Forgot password token is required',
+  MAX_FILE_SIZE: 'Maximum file size is 4MB'
 }

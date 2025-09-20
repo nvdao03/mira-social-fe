@@ -12,6 +12,7 @@ import { AppContext } from '../../contexts/app.context'
 import type { ProfileType } from '../../types/user.type'
 import { saveAvatarFromLocalStorage, saveNameFromLocalStorage } from '../../utils/auth'
 import Loading from '../../components/Loading'
+import { HTTP_STATUS } from '../../constants/httpStatus'
 
 type UpdateProfileFormData = UpdateProfileFormValues
 
@@ -50,6 +51,16 @@ export default function UpdateProfile() {
         const newAvatar = data.data.data.map((avatar: any) => avatar.url)[0]
         setAvatarImage(newAvatar)
         setValue('avatar', newAvatar)
+      },
+      onError: (error: any) => {
+        if (
+          error.response.status === HTTP_STATUS.SERVER_ERROR &&
+          error.response.data.message === 'options.maxFiles (1) exceeded'
+        ) {
+          toast.warn(MESSAGE.MAX_FILE)
+        } else {
+          toast.warn(MESSAGE.MAX_FILE_SIZE)
+        }
       }
     })
   }
@@ -60,6 +71,16 @@ export default function UpdateProfile() {
         const newCoverPhoto = data.data.data.map((coverPhoto: any) => coverPhoto.url)[0]
         setCoverPhoto(newCoverPhoto)
         setValue('cover_photo', newCoverPhoto)
+      },
+      onError: (error: any) => {
+        if (
+          error.response.status === HTTP_STATUS.SERVER_ERROR &&
+          error.response.data.message === 'options.maxFiles (1) exceeded'
+        ) {
+          toast.warn(MESSAGE.MAX_FILE)
+        } else {
+          toast.warn(MESSAGE.MAX_FILE_SIZE)
+        }
       }
     })
   }
@@ -134,10 +155,12 @@ export default function UpdateProfile() {
                 multiple={true}
                 accept='image/*'
                 onChange={(e: any) => {
-                  const file = e.target.files[0]
-                  if (file) {
+                  const files = e.target.files
+                  if (files && files.length > 0) {
                     const formData = new FormData()
-                    formData.append('image', file)
+                    Array.from(files).forEach((file: any) => {
+                      formData.append('image', file)
+                    })
                     handleUploadCoverPhoto(formData)
                   }
                   e.target.value = ''
@@ -194,10 +217,12 @@ export default function UpdateProfile() {
                   multiple={true}
                   accept='image/*'
                   onChange={(e: any) => {
-                    const file = e.target.files[0]
-                    if (file) {
+                    const files = e.target.files
+                    if (files && files.length > 0) {
                       const formData = new FormData()
-                      formData.append('image', file)
+                      Array.from(files).forEach((file: any) => {
+                        formData.append('image', file)
+                      })
                       handleUploadAvatar(formData)
                     }
                     e.target.value = ''

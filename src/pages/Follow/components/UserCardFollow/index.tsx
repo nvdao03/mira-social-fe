@@ -117,7 +117,7 @@ function UserCardFollow({ user, type }: PropTypes) {
               </svg>
             )}
           </div>
-          <span className='text-[#71767B] text-[13px] w-full mt-1'>@{user.username}</span>
+          <span className='text-[#71767B] text-[13px] w-full mt-1'>{user.username}</span>
         </div>
       </div>
       {/* Xử lý: Nếu là user đang login và nếu đang ở component Followings thì hiện nút following và hover vào hiển thị unfollow */}

@@ -119,7 +119,7 @@ function Profile() {
               </Link>
               <h3 className='text-color_auth text-[18px] font-semibold ml-3'>{user.name}</h3>
             </div>
-            {user.verify === 0 && (
+            {user.verify === 0 && user._id === id && (
               <div className='bg-yellow-500/10 text-[14px] border border-yellow-500 text-yellow-500 text-center py-3 px-4'>
                 <p className='font-medium flex items-center gap-2'>
                   Your account is not verified. Please check your email to verify your account

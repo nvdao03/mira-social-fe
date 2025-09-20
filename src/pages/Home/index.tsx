@@ -169,33 +169,29 @@ function Home() {
       </header>
       {/* List Post */}
       <div className='mt-1'>
-        {isLoading && (
+        {isLoading ? (
           <div className='w-full flex items-center justify-center h-[100vh]'>
             <Loading />
           </div>
-        )}
-        {!isLoading && (
-          <>
-            {posts.length === 0 && (
-              <div className='flex-1 flex items-center justify-center min-h-[calc(100vh-150px)] lg:min-h-[calc(100vh-70px)]'>
-                <span>No post</span>
+        ) : posts.length === 0 ? (
+          <div className='flex-1 flex items-center justify-center min-h-[calc(100vh-150px)] lg:min-h-[calc(100vh-70px)]'>
+            <span>No post</span>
+          </div>
+        ) : (
+          <InfiniteScroll
+            dataLength={posts.length}
+            next={fetchNextPage}
+            hasMore={!!hasNextPage}
+            loader={
+              <div className='flex justify-center items-center py-4 min-h-[80px]'>
+                <Loading />
               </div>
-            )}
-            <InfiniteScroll
-              dataLength={posts.length} // tổng số posts đã load
-              next={fetchNextPage} // gọi hàm load thêm
-              hasMore={!!hasNextPage} // kiểm soát còn trang không
-              loader={
-                <div className='flex justify-center items-center py-4 min-h-[80px]'>
-                  <Loading />
-                </div>
-              }
-            >
-              {posts.map((post: PostType) => (
-                <Post key={post._id} post={post} queryClient={queryClient} />
-              ))}
-            </InfiniteScroll>
-          </>
+            }
+          >
+            {posts.map((post: PostType) => (
+              <Post key={post._id} post={post} queryClient={queryClient} />
+            ))}
+          </InfiniteScroll>
         )}
       </div>
     </div>

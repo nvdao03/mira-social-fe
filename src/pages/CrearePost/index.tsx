@@ -12,6 +12,7 @@ import { toast } from 'react-toastify'
 import postApi from '../../apis/post.api'
 import { MESSAGE } from '../../constants/message'
 import Loading from '../../components/Loading'
+import { HTTP_STATUS } from '../../constants/httpStatus'
 
 type CreatePostFormData = CreatePostFormValues
 
@@ -75,8 +76,15 @@ export default function CreatePost() {
         setMedias(newMedias)
         setValue('medias', newMedias)
       },
-      onError: () => {
-        toast.warn(MESSAGE.MAX_FILE)
+      onError: (error: any) => {
+        if (
+          error.response.status === HTTP_STATUS.SERVER_ERROR &&
+          error.response.data.message === 'options.maxFiles (1) exceeded'
+        ) {
+          toast.warn(MESSAGE.MAX_FILE)
+        } else {
+          toast.warn(MESSAGE.MAX_FILE_SIZE)
+        }
       }
     })
   }

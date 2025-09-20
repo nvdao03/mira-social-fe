@@ -108,14 +108,14 @@ function SideBar() {
           </div>
           <div className='h-10 text-[15px] hidden lg:flex flex-col justify-between'>
             <span className='font-semibold max-w-[150px] truncate leading-[1.5]'>{name}</span>
-            <span className='text-[#71767B] text-xs'>{username}</span>
+            <span className='text-[#71767B] text-xs max-w-[150px] truncate'>{username}</span>
           </div>
         </div>
         <div className='absolute bottom-[100%] left-0 z-50 w-60 rounded-lg hidden bg-black text-white lg:group-hover:block transition-all duration-200 ease-in-out shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)]'>
           <div className='text-sm'>
             <button
               onClick={handleLogout}
-              className='w-full text-color_text text-left font-semibold p-4 cursor-pointer rounded-lg'
+              className='w-full text-color_text text-left font-semibold p-4 cursor-pointer rounded-lg truncate'
             >
               Log out {username}
             </button>

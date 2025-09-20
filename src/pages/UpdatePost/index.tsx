@@ -12,6 +12,8 @@ import { toast } from 'react-toastify'
 import postApi from '../../apis/post.api'
 import type { PostType } from '../../types/post.type'
 import Loading from '../../components/Loading'
+import { MESSAGE } from '../../constants/message'
+import { HTTP_STATUS } from '../../constants/httpStatus'
 
 type UpdatePostFormData = UpdatePostFormValues
 
@@ -78,8 +80,15 @@ export default function UpdatePost() {
         setMedias(newMedias)
         setValue('medias', newMedias)
       },
-      onError: () => {
-        toast.warn('Maximum 1 image allowed')
+      onError: (error: any) => {
+        if (
+          error.response.status === HTTP_STATUS.SERVER_ERROR &&
+          error.response.data.message === 'options.maxFiles (1) exceeded'
+        ) {
+          toast.warn(MESSAGE.MAX_FILE)
+        } else {
+          toast.warn(MESSAGE.MAX_FILE_SIZE)
+        }
       }
     })
   }

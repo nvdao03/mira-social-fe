@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import googleIcon from '../../assets/imgs/google.svg'
@@ -10,15 +10,35 @@ import { useMutation } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
 import { toast } from 'react-toastify'
 import { MESSAGE } from '../../constants/message'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { AppContext } from '../../contexts/app.context'
 import { HTTP_STATUS } from '../../constants/httpStatus'
+import useQueryParam from '../../hooks/useQueryParam'
+import {
+  saveAccessTokenFromLocalStorage,
+  saveAvatarFromLocalStorage,
+  saveIdFromLocalStorage,
+  saveNameFromLocalStorage,
+  saveRefreshTokenFromLocalStorage,
+  saveUsernameFromLocalStorage
+} from '../../utils/auth'
 
 type SignInFromData = SignInFormValues
+
+interface OauthParamsType {
+  access_token: string
+  avatar: string
+  email: string
+  id: string
+  name: string
+  refresh_token: string
+  username: string
+}
 
 function SignIn() {
   const { setId, setIsauthenticated, setRefreshToken, setAvatar, setUsername, setName } = useContext(AppContext)
   const navigate = useNavigate()
+  const params = useQueryParam()
 
   const {
     register,
@@ -36,7 +56,6 @@ function SignIn() {
   const handleSubmitForm = handleSubmit((data: SignInFromData) => {
     signInMutation.mutate(data, {
       onSuccess: (response) => {
-        console.log(response)
         toast.success(MESSAGE.LOGIN_SUCCESSFULLY)
         setIsauthenticated(true)
         setRefreshToken(response.data.data.refresh_token)
@@ -63,6 +82,50 @@ function SignIn() {
       }
     })
   })
+
+  useEffect(() => {
+    if (!params) return
+    if (params) {
+      const data = params as unknown as OauthParamsType
+      const { access_token, avatar, id, name, refresh_token, username } = data
+
+      if (!access_token || !id) {
+        return
+      }
+
+      setIsauthenticated(true)
+      saveAccessTokenFromLocalStorage(access_token)
+      saveRefreshTokenFromLocalStorage(refresh_token)
+      saveIdFromLocalStorage(id)
+      saveAvatarFromLocalStorage(avatar)
+      saveNameFromLocalStorage(name)
+      saveUsernameFromLocalStorage(username)
+
+      setRefreshToken(refresh_token)
+      setId(id)
+      setAvatar(avatar)
+      setName(name)
+      setUsername(username)
+
+      navigate(PATH.HOME)
+    }
+  }, [params])
+
+  const getGoogleOauthUrl = () => {
+    const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
+    const URL = 'https://accounts.google.com/o/oauth2/auth'
+    const query = new URLSearchParams({
+      client_id: VITE_GOOGLE_CLIENT_ID,
+      redirect_uri: VITE_GOOGLE_REDIRECT_URI,
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile'
+      ].join(' '),
+      response_type: 'code',
+      prompt: 'consent'
+    })
+    return `${URL}?${query.toString()}`
+  }
 
   return (
     <div className='container h-[100vh]'>
@@ -110,7 +173,7 @@ function SignIn() {
                 <hr className='w-full bg-[#3d444d]' />
               </div>
               <Link
-                to={''}
+                to={getGoogleOauthUrl()}
                 className='w-full flex items-center justify-center gap-x-2 py-[12px] px-4 bg-[#212830] rounded-[5px] mt-4 text-[14px] font-semibold'
               >
                 <img src={googleIcon} alt='google' />
