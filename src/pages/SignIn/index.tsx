@@ -190,8 +190,17 @@ function SignIn() {
         </div>
       </div>
       <div className='fixed w-full bg-[#151B23] py-[20px] left-0 right-0 bottom-0 text-[#9198A1] text-center text-[14px] text-wrap leading-[1.5]'>
-        <div className='container'>
-          <span>Copyright © 2025. Bản quyền website Nguyễn Văn Đạo</span>
+        <div className='container flex justify-center leading-[1.5] gap-2 flex-col'>
+          <span className='block'>Copyright © 2025. Bản quyền website Nguyễn Văn Đạo</span>
+          <p className='flex items-center justify-center gap-3'>
+            <Link to={PATH.PRIVACY_POLICY} className='hover:underline'>
+              Privacy Policy
+            </Link>
+            <span>|</span>
+            <Link to={PATH.TERMS_OF_SERVICE} className='hover:underline'>
+              Terms of Service
+            </Link>
+          </p>
         </div>
       </div>
     </div>

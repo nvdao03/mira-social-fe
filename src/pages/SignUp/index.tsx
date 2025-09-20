@@ -185,11 +185,11 @@ function SignUp() {
             </form>
             <p className='text-[14px] mt-[12px] text-[#57606A] leading-[1.5]'>
               By creating an account, you agree to the{' '}
-              <Link to={''} className='text-[#4493F8] underline'>
+              <Link to={PATH.TERMS_OF_SERVICE} className='text-[#4493F8] underline'>
                 Terms of Service
               </Link>
               . For more information about{' '}
-              <Link to={''} className='text-[#4493F8] underline'>
+              <Link to={PATH.PRIVACY_POLICY} className='text-[#4493F8] underline'>
                 Mira's privacy
               </Link>{' '}
               practices, see the Mira Privacy{' '}
