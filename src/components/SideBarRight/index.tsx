@@ -82,6 +82,17 @@ function SideBarRight() {
           </div>
         )}
       </div>
+      <div className='ml-1 w-full text-sm text-gray-400 border-t border-gray-700 mt-4'>
+        <p className='text-[12px] flex items-center justify-center gap-3'>
+          <Link to={PATH.PRIVACY_POLICY} className='hover:underline'>
+            Privacy Policy
+          </Link>
+          <span>|</span>
+          <Link to={PATH.TERMS_OF_SERVICE} className='hover:underline'>
+            Terms of Service
+          </Link>
+        </p>
+      </div>
     </aside>
   )
 }
