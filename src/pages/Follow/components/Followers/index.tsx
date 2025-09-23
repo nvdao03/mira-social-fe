@@ -31,7 +31,7 @@ function Followers({ user_id, type }: PropTypes) {
 
   const { isLoading, data, fetchNextPage, hasNextPage } = getFollowersQuery
 
-  const followers = data?.pages.flatMap((page) => page.data.data.followers) || []
+  const followers = data?.pages?.flatMap((page) => page.data.data.followers) || []
 
   const renderContent = () => {
     if (isLoading) {

@@ -22,7 +22,8 @@ function SideBarRight() {
 
   const userSuggestionsQuery = useQuery({
     queryKey: ['user_not_follow_suggestions', params.user_id],
-    queryFn: () => userApi.getUserSuggestions(queryConfig)
+    queryFn: () => userApi.getUserSuggestions(queryConfig),
+    staleTime: 5 * 60 * 1000
   })
 
   const users = useMemo(() => {
