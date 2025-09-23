@@ -6,7 +6,7 @@ type SignInFormData = SignInFormValues
 type ChangePasswordFormData = ChangePasswordFormValues
 
 export const authApi = {
-  // --- Authentication ---
+  // --- Authentication ----
   signUp: (body: SignUpFormData) => http.post('/auth/sign-up', body),
   signIn: (body: SignInFormData) => http.post('/auth/sign-in', body),
   logout: (body: { refresh_token: string }) => http.post('/auth/logout', body),
