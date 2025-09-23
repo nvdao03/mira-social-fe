@@ -13,26 +13,20 @@ interface PropTypes {
 function UserCard({ user }: PropTypes) {
   const navidate = useNavigate()
   const location = useLocation()
-
   const queryClient = useQueryClient()
 
   const followMutation = useMutation({
-    mutationFn: (body: { followed_user_id: string }) => {
-      return followApi.follow(body)
+    mutationFn: (body: { followed_user_id: string }) => followApi.follow(body),
+    onSuccess: () => {
+      const keys = ['user_not_follow_suggestions', 'profile', 'followings', 'followers', 'user_suggestions_connect']
+      keys.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }))
+      toast.success('Follow successfully')
     }
   })
 
-  const handleFollow = (body: { followed_user_id: string }) => {
-    followMutation.mutate(body, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['user_not_follow_suggestions'] })
-        queryClient.invalidateQueries({ queryKey: ['profile'] })
-        queryClient.invalidateQueries({ queryKey: ['followings'] })
-        queryClient.invalidateQueries({ queryKey: ['followers'] })
-        queryClient.invalidateQueries({ queryKey: ['user_suggestions_connect'] })
-        toast.success('Follow successfully')
-      }
-    })
+  const handleFollow = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    followMutation.mutate({ followed_user_id: user._id })
   }
 
   const pathName = location.pathname
@@ -69,10 +63,7 @@ function UserCard({ user }: PropTypes) {
         </div>
       </div>
       <button
-        onClick={(e) => {
-          e.stopPropagation()
-          handleFollow({ followed_user_id: user._id })
-        }}
+        onClick={handleFollow}
         className='border border-solid text-[#0F1419] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 hover:bg-opacity-90 transition-all duration-200 ease-in-out'
       >
         Follow

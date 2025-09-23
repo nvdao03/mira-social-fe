@@ -10,7 +10,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { AppContext } from '../../contexts/app.context'
 import { toast } from 'react-toastify'
 import postApi from '../../apis/post.api'
-import type { PostType } from '../../types/post.type'
+import type { Media, PostType } from '../../types/post.type'
 import Loading from '../../components/Loading'
 import { MESSAGE } from '../../constants/message'
 import { HTTP_STATUS } from '../../constants/httpStatus'
@@ -19,19 +19,12 @@ type UpdatePostFormData = UpdatePostFormValues
 
 export default function UpdatePost() {
   const { id } = useContext(AppContext)
-
   const navigate = useNavigate()
   const params = useParams()
 
-  const [medias, setMedias] = useState<{ url: string; type: number }[]>([])
-
-  let images: { url: string; type: number }[] = useMemo(() => {
-    return medias.filter((item) => item.type === 0)
-  }, [medias])
-
-  let videos: { url: string; type: number }[] = useMemo(() => {
-    return medias.filter((item) => item.type === 1)
-  }, [medias])
+  const [medias, setMedias] = useState<Media[]>([])
+  const images: Media[] = useMemo(() => medias.filter((item) => item.type === 0), [medias])
+  const videos: Media[] = useMemo(() => medias.filter((item) => item.type === 1), [medias])
 
   const { register, handleSubmit, setValue, watch } = useForm<UpdatePostFormData>({
     defaultValues: {
@@ -43,64 +36,59 @@ export default function UpdatePost() {
     }
   })
 
+  const content = watch('content')
+
   const getPostQuery = useQuery({
     queryKey: ['post', params.id],
     queryFn: () => postApi.getPostDetail(params.post_id as string)
   })
 
-  const content = watch('content')
-
   const uploadImageMutation = useMutation({
-    mutationFn: (file: FormData) => fileApi.uploadImage(file)
+    mutationFn: (file: FormData) => fileApi.uploadImage(file),
+    onSuccess: (data) => {
+      const newMedias = data.data.data
+      setMedias(newMedias)
+      setValue('medias', newMedias)
+    },
+    onError: (error: any) => {
+      if (
+        error.response.status === HTTP_STATUS.SERVER_ERROR &&
+        error.response.data.message === 'options.maxFiles (1) exceeded'
+      ) {
+        toast.warn(MESSAGE.MAX_FILE)
+      } else {
+        toast.warn(MESSAGE.MAX_FILE_SIZE)
+      }
+    }
   })
 
   const uploadVideoMutation = useMutation({
-    mutationFn: (file: FormData) => fileApi.uploadVideo(file)
+    mutationFn: (file: FormData) => fileApi.uploadVideo(file),
+    onSuccess: (data) => {
+      const newMedias = data.data.data
+      setMedias(newMedias)
+      setValue('medias', newMedias)
+    }
   })
 
   const updatePostMutation = useMutation({
-    mutationFn: (body: UpdatePostFormData) => {
-      return postApi.updatePost(body, params.post_id as string)
+    mutationFn: (body: UpdatePostFormData) => postApi.updatePost(params.post_id as string, body),
+    onSuccess: () => {
+      toast.success('Update Post Successfully')
+      navigate(PATH.HOME)
     }
   })
 
   const handleSubmitForm = handleSubmit((data: UpdatePostFormData) => {
-    updatePostMutation.mutate(data, {
-      onSuccess: () => {
-        toast.success('Update Post Successfully')
-        navigate(PATH.HOME)
-      }
-    })
+    updatePostMutation.mutate(data)
   })
 
   const handleUploadImage = (file: FormData) => {
-    uploadImageMutation.mutate(file, {
-      onSuccess: (data) => {
-        const newMedias = data.data.data
-        setMedias(newMedias)
-        setValue('medias', newMedias)
-      },
-      onError: (error: any) => {
-        if (
-          error.response.status === HTTP_STATUS.SERVER_ERROR &&
-          error.response.data.message === 'options.maxFiles (1) exceeded'
-        ) {
-          toast.warn(MESSAGE.MAX_FILE)
-        } else {
-          toast.warn(MESSAGE.MAX_FILE_SIZE)
-        }
-      }
-    })
+    uploadImageMutation.mutate(file)
   }
 
   const handleUploadVideo = (file: FormData) => {
-    uploadVideoMutation.mutate(file, {
-      onSuccess: (data) => {
-        const newMedias = data.data.data
-        setMedias(newMedias)
-        setValue('medias', newMedias)
-      }
-    })
+    uploadVideoMutation.mutate(file)
   }
 
   useEffect(() => {
@@ -109,9 +97,9 @@ export default function UpdatePost() {
       setValue('type', 0)
       setValue('parent_id', null)
       setValue('user_id', id)
-      setValue('content', post.content)
-      setValue('medias', post.medias)
-      setMedias(post.medias as [])
+      setValue('content', post.content as '')
+      setValue('medias', post.medias as Media[])
+      setMedias(post.medias as Media[])
     })
   }, [params.post_id, getPostQuery.data?.data.data])
 
@@ -135,6 +123,7 @@ export default function UpdatePost() {
         </Link>
         <h3 className='text-color_auth text-[18px] font-semibold ml-3'>Update Post</h3>
       </div>
+
       {/* Content Submit */}
       <div className='px-4 py-3 min-h-[92vh]'>
         <div className='flex gap-x-3'>
@@ -150,6 +139,7 @@ export default function UpdatePost() {
               }}
               placeholder="What's happening?"
             ></textarea>
+
             {/* Media preview */}
             {isUploading && (
               <div className='w-full h-full flex justify-center items-center'>
@@ -202,6 +192,7 @@ export default function UpdatePost() {
                 ))}
               </div>
             )}
+
             {/* Media submit */}
             <div className='flex items-center justify-between mt-4'>
               <div className='flex items-center gap-x-4'>

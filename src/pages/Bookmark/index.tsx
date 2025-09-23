@@ -2,26 +2,67 @@ import { Link } from 'react-router-dom'
 import { PATH } from '../../constants/path'
 import useQueryParam from '../../hooks/useQueryParam'
 import type { QueryConfig } from '../../configs/query.config'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { bookmarkApi } from '../../apis/bookmark.api'
 import type { PostType } from '../../types/post.type'
 import Post from '../../components/Post'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import Loading from '../../components/Loading'
 
 function Bookmark() {
   const queryClient = useQueryClient()
-
   const queryParams: QueryConfig = useQueryParam()
-
   const queryConfig: QueryConfig = {
-    limit: queryParams.limit || 10,
-    page: queryParams.page || 1
+    limit: queryParams.limit ?? 15,
+    page: queryParams.page ?? 1
   }
 
-  const bookmarkQuery = useQuery({
+  const bookmarkQuery = useInfiniteQuery({
     queryKey: ['bookmarks', queryConfig],
-    queryFn: () => bookmarkApi.getBookmarks(queryConfig),
-    keepPreviousData: true
+    queryFn: ({ pageParam = 1 }) => bookmarkApi.getBookmarks({ page: pageParam, limit: queryConfig.limit }),
+    keepPreviousData: true,
+    getNextPageParam: (lastpage) => {
+      const { pagination } = lastpage.data.data
+      return pagination.page < pagination.total_page ? pagination.page + 1 : undefined
+    }
   })
+
+  const { data, isLoading, fetchNextPage, hasNextPage } = bookmarkQuery
+
+  const posts = data?.pages.flatMap((page) => page.data.data.posts) || []
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className='w-full flex items-center justify-center h-[100vh]'>
+          <Loading />
+        </div>
+      )
+    }
+    if (posts.length === 0) {
+      return (
+        <h3 className='absolute top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
+          No bookmarks
+        </h3>
+      )
+    }
+    return (
+      <InfiniteScroll
+        dataLength={posts.length}
+        hasMore={!!hasNextPage}
+        next={fetchNextPage}
+        loader={
+          <div className='flex justify-center items-center py-4 min-h-[80px]'>
+            <Loading />
+          </div>
+        }
+      >
+        {posts.map((post: PostType) => (
+          <Post key={post._id} post={post} queryClient={queryClient} />
+        ))}
+      </InfiniteScroll>
+    )
+  }
 
   return (
     <div className='pb-[45px] md:pb-[5px]'>
@@ -37,18 +78,7 @@ function Bookmark() {
         <h3 className='text-color_auth text-[18px] font-semibold ml-3'>Bookmarks</h3>
       </div>
       {/* Posts */}
-      {bookmarkQuery.data?.data.data.posts.length === 0 && (
-        <h3 className='absolute top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
-          No bookmarks
-        </h3>
-      )}
-      {bookmarkQuery.data?.data.data.posts && (
-        <div className=''>
-          {bookmarkQuery.data.data.data.posts.map((post: PostType) => (
-            <Post key={post._id} post={post} queryClient={queryClient} />
-          ))}
-        </div>
-      )}
+      {renderContent()}
     </div>
   )
 }

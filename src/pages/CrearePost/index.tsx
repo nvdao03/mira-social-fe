@@ -13,22 +13,17 @@ import postApi from '../../apis/post.api'
 import { MESSAGE } from '../../constants/message'
 import Loading from '../../components/Loading'
 import { HTTP_STATUS } from '../../constants/httpStatus'
+import type { Media } from '../../types/post.type'
 
 type CreatePostFormData = CreatePostFormValues
 
 export default function CreatePost() {
   const { id } = useContext(AppContext)
-
   const navigate = useNavigate()
+  const [medias, setMedias] = useState<Media[]>([])
 
-  const [medias, setMedias] = useState<{ url: string; type: number }[]>([])
-
-  let images: { url: string; type: number }[] = useMemo(() => {
-    return medias.filter((item) => item.type === 0)
-  }, [medias])
-  let videos: { url: string; type: number }[] = useMemo(() => {
-    return medias.filter((item) => item.type === 1)
-  }, [medias])
+  const images = useMemo(() => medias.filter((item) => item.type === 0), [medias])
+  const videos = useMemo(() => medias.filter((item) => item.type === 1), [medias])
 
   const { register, handleSubmit, setValue, watch, reset } = useForm<CreatePostFormData>({
     defaultValues: {
@@ -51,22 +46,19 @@ export default function CreatePost() {
   })
 
   const createPostMutation = useMutation({
-    mutationFn: (body: CreatePostFormData) => {
-      return postApi.createPost(body)
+    mutationFn: (body: CreatePostFormData) => postApi.createPost(body),
+    onSuccess: () => {
+      ;(toast.success('Create Post Successfully'), reset(), setMedias([]))
+      navigate(PATH.HOME)
+    },
+    onError(error: any) {
+      const message = error.response.data.message
+      toast.warn(message)
     }
   })
 
   const handleSubmitForm = handleSubmit((data: CreatePostFormData) => {
-    createPostMutation.mutate(data, {
-      onSuccess: () => {
-        ;(toast.success('Create Post Successfully'), reset(), setMedias([]))
-        navigate(PATH.HOME)
-      },
-      onError(error: any) {
-        const message = error.response.data.message
-        toast.warn(message)
-      }
-    })
+    createPostMutation.mutate(data)
   })
 
   const handleUploadImage = (file: FormData) => {

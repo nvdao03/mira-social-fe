@@ -10,20 +10,16 @@ import { toast } from 'react-toastify'
 import { MESSAGE } from '../../constants/message'
 import { AppContext } from '../../contexts/app.context'
 import type { ProfileType } from '../../types/user.type'
-import { saveAvatarFromLocalStorage, saveNameFromLocalStorage } from '../../utils/auth'
 import Loading from '../../components/Loading'
 import { HTTP_STATUS } from '../../constants/httpStatus'
+import { saveAvatar, saveName } from '../../utils/auth'
 
 type UpdateProfileFormData = UpdateProfileFormValues
 
 export default function UpdateProfile() {
   const { setAvatar, setName } = useContext(AppContext)
-
   const params = useParams()
   const navidate = useNavigate()
-
-  const [avatarImage, setAvatarImage] = useState<string>('')
-  const [coverPhoto, setCoverPhoto] = useState<string>('')
 
   const { register, handleSubmit, setValue } = useForm<UpdateProfileFormData>()
 
@@ -34,74 +30,77 @@ export default function UpdateProfile() {
   })
 
   const uploadAvatarMutation = useMutation({
-    mutationFn: (file: FormData) => fileApi.uploadAvatar(file)
+    mutationFn: (file: FormData) => fileApi.uploadAvatar(file),
+    onSuccess: (data) => {
+      const newAvatar = data.data.data.map((avatar: any) => avatar.url)[0]
+      setAvatarImage(newAvatar)
+      setValue('avatar', newAvatar)
+    },
+    onError: (error: any) => {
+      if (
+        error.response.status === HTTP_STATUS.SERVER_ERROR &&
+        error.response.data.message === 'options.maxFiles (1) exceeded'
+      ) {
+        toast.warn(MESSAGE.MAX_FILE)
+      } else {
+        toast.warn(MESSAGE.MAX_FILE_SIZE)
+      }
+    }
   })
 
   const uploadCoverPhotoMutation = useMutation({
-    mutationFn: (file: FormData) => fileApi.uploadCoverPhoto(file)
+    mutationFn: (file: FormData) => fileApi.uploadCoverPhoto(file),
+    onSuccess: (data) => {
+      const newCoverPhoto = data.data.data.map((coverPhoto: any) => coverPhoto.url)[0]
+      setCoverPhoto(newCoverPhoto)
+      setValue('cover_photo', newCoverPhoto)
+    },
+    onError: (error: any) => {
+      if (
+        error.response.status === HTTP_STATUS.SERVER_ERROR &&
+        error.response.data.message === 'options.maxFiles (1) exceeded'
+      ) {
+        toast.warn(MESSAGE.MAX_FILE)
+      } else {
+        toast.warn(MESSAGE.MAX_FILE_SIZE)
+      }
+    }
   })
 
   const updateProfileMutation = useMutation({
-    mutationFn: (body: UpdateProfileFormValues) => userApi.updateProile(params.user_id as string, body)
+    mutationFn: (body: UpdateProfileFormData) => userApi.updateProfile(params.user_id as string, body),
+    onSuccess: (data) => {
+      toast.success(MESSAGE.UPDATE_PROFILE_SUCCESSFULLY)
+
+      setAvatar(data.data.data.avatar)
+      setName(data.data.data.name)
+      setAvatarImage('')
+      setCoverPhoto('')
+
+      saveAvatar(data.data.data.avatar)
+      saveName(data.data.data.name)
+
+      navidate(`/${params.user_id}`)
+    },
+    onError(error: any) {
+      const message = error.response.data.message
+      toast.warn(message)
+    }
   })
 
+  const [avatarImage, setAvatarImage] = useState<string>('')
+  const [coverPhoto, setCoverPhoto] = useState<string>('')
+
   const handleUploadAvatar = (file: FormData) => {
-    uploadAvatarMutation.mutate(file, {
-      onSuccess: (data) => {
-        const newAvatar = data.data.data.map((avatar: any) => avatar.url)[0]
-        setAvatarImage(newAvatar)
-        setValue('avatar', newAvatar)
-      },
-      onError: (error: any) => {
-        if (
-          error.response.status === HTTP_STATUS.SERVER_ERROR &&
-          error.response.data.message === 'options.maxFiles (1) exceeded'
-        ) {
-          toast.warn(MESSAGE.MAX_FILE)
-        } else {
-          toast.warn(MESSAGE.MAX_FILE_SIZE)
-        }
-      }
-    })
+    uploadAvatarMutation.mutate(file)
   }
 
   const handleUploadCoverPhoto = (file: FormData) => {
-    uploadCoverPhotoMutation.mutate(file, {
-      onSuccess: (data) => {
-        const newCoverPhoto = data.data.data.map((coverPhoto: any) => coverPhoto.url)[0]
-        setCoverPhoto(newCoverPhoto)
-        setValue('cover_photo', newCoverPhoto)
-      },
-      onError: (error: any) => {
-        if (
-          error.response.status === HTTP_STATUS.SERVER_ERROR &&
-          error.response.data.message === 'options.maxFiles (1) exceeded'
-        ) {
-          toast.warn(MESSAGE.MAX_FILE)
-        } else {
-          toast.warn(MESSAGE.MAX_FILE_SIZE)
-        }
-      }
-    })
+    uploadCoverPhotoMutation.mutate(file)
   }
 
   const handleUpdateProfile = handleSubmit((data) => {
-    updateProfileMutation.mutate(data, {
-      onSuccess: (data) => {
-        toast.success(MESSAGE.UPDATE_PROFILE_SUCCESSFULLY)
-        setAvatar(data.data.data.avatar)
-        setName(data.data.data.name)
-        saveAvatarFromLocalStorage(data.data.data.avatar)
-        saveNameFromLocalStorage(data.data.data.name)
-        setAvatarImage('')
-        setCoverPhoto('')
-        navidate(`/${params.user_id}`)
-      },
-      onError(error: any) {
-        const message = error.response.data.message
-        toast.warn(message)
-      }
-    })
+    updateProfileMutation.mutate(data)
   })
 
   useEffect(() => {

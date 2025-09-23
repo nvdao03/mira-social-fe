@@ -9,10 +9,12 @@ import { PATH } from '../../constants/path'
 
 export default function VerifyForgotPassword() {
   const queryParams: QueryConfig = useQueryParam()
-
   const queryConfig: QueryConfig = {
     forgot_password_token: queryParams.forgot_password_token || ''
   }
+
+  const navigate = useNavigate()
+  const [status, setStatus] = useState<boolean>(false)
 
   const verifyForgotPasswordMutation = useMutation({
     mutationFn: (body: { forgot_password_token: string }) => authApi.verifyForgotPassword(body),
@@ -27,10 +29,6 @@ export default function VerifyForgotPassword() {
       setStatus(true)
     }
   })
-
-  const navigate = useNavigate()
-
-  const [status, setStatus] = useState<boolean>(false)
 
   useEffect(() => {
     if (queryConfig.forgot_password_token) {

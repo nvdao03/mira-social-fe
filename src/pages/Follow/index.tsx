@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import Followers from './components/Followers'
 import Followings from './components/Followings'
@@ -6,10 +6,9 @@ import Followings from './components/Followings'
 function Follow() {
   const params = useParams()
   const location = useLocation()
-  const navidate = useNavigate()
 
-  const type = location.state.type as string
-  const name = location.state.name as string
+  const type = location.state?.type as string
+  const name = location.state?.name as string
 
   const [isActiveTab, setIsActiveTab] = useState<string>(type)
 
@@ -17,13 +16,13 @@ function Follow() {
     <div className='relative pb-[45px] md:pb-[5px]'>
       {/* Header */}
       <div className='px-4 pt-2 flex items-center sticky top-0 left-0 right-0 bg-black z-20'>
-        <div onClick={() => navidate(`/${params.user_id}`)} className='py-3 pr-3'>
+        <Link to={`/${params.user_id}`} className='py-3 pr-3'>
           <svg viewBox='0 0 24 24' aria-hidden='true' className='inline-block h-5 w-5' fill='#eff3f4'>
             <g>
               <path d='M7.414 13l5.043 5.04-1.414 1.42L3.586 12l7.457-7.46 1.414 1.42L7.414 11H21v2H7.414z'></path>
             </g>
           </svg>
-        </div>
+        </Link>
         <h3 className='text-color_auth text-[18px] font-semibold ml-3'>{name}</h3>
       </div>
       {/* Tabs */}

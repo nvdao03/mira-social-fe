@@ -9,43 +9,23 @@ import { useMutation } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
 
 function SideBar() {
-  const {
-    id,
-    avatar,
-    name,
-    username,
-    refreshToken,
-    setId,
-    setIsauthenticated,
-    setRefreshToken,
-    setAvatar,
-    setUsername,
-    setName
-  } = useContext(AppContext)
+  const { id, avatar, name, username, refreshToken, resetAppContext } = useContext(AppContext)
 
   const location = useLocation()
   const params = useParams()
   const navigate = useNavigate()
 
   const logoutMutation = useMutation({
-    mutationFn: (body: { refresh_token: string }) => authApi.logout(body)
+    mutationFn: (body: { refresh_token: string }) => authApi.logout(body),
+    onSuccess: () => {
+      resetAppContext()
+      navigate(PATH.SIGN_IN)
+    }
   })
 
   const handleLogout = () => {
-    logoutMutation.mutate(
-      { refresh_token: refreshToken },
-      {
-        onSuccess: () => {
-          setIsauthenticated(false)
-          setRefreshToken('')
-          setAvatar('')
-          setUsername('')
-          setName('')
-          setId('')
-          navigate(PATH.SIGN_IN)
-        }
-      }
-    )
+    if (!refreshToken) return
+    logoutMutation.mutate({ refresh_token: refreshToken })
   }
 
   return (
@@ -69,7 +49,7 @@ function SideBar() {
               viewBox='0 0 640 640'
               fill='none'
               stroke={
-                (sidebar.path === PATH.PROFILE ? params.user_id === id : sidebar.path === location.pathname)
+                (sidebar.path === PATH.PROFILE ? params.user_id?.toString() === id : sidebar.path === location.pathname)
                   ? '#1d9bf0'
                   : '#FFFFFF'
               }

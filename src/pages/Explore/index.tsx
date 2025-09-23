@@ -2,31 +2,79 @@ import { useForm } from 'react-hook-form'
 import useQueryParam from '../../hooks/useQueryParam'
 import type { QueryConfig } from '../../configs/query.config'
 import { searchApi } from '../../apis/search.api'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import type { UserSuggestion } from '../../types/user.type'
 import Loading from '../../components/Loading'
 import UserCardFollow from '../Follow/components/UserCardFollow'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import useDebounce from '../../hooks/useDebounce'
 
 export default function Explore() {
-  const queryParam: QueryConfig = useQueryParam()
-
   const { register, watch } = useForm()
-
   const key = watch('key')
+  const debounceKey = useDebounce(key, 500)
 
+  const queryParam: QueryConfig = useQueryParam()
   const queryConfig: QueryConfig = {
-    limit: queryParam.limit || 20,
+    limit: queryParam.limit || 10,
     page: queryParam.page || 1,
-    key: queryParam.key || key
+    key: queryParam.key || debounceKey
   }
 
-  const searchQuery = useQuery({
+  const searchQuery = useInfiniteQuery({
     queryKey: ['search', queryConfig],
-    queryFn: () => searchApi.search(queryConfig),
-    keepPreviousData: true
+    queryFn: ({ pageParam = queryConfig.page }) => {
+      return searchApi.search({
+        page: pageParam,
+        limit: queryConfig.limit,
+        key: queryConfig.key as string
+      })
+    },
+    keepPreviousData: true,
+    getNextPageParam: (lastpage) => {
+      const { pagination } = lastpage.data.data
+      return pagination.page < pagination.total_page ? pagination.page + 1 : undefined
+    }
   })
 
-  const { data, isLoading } = searchQuery
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetching } = searchQuery
+
+  const users = data?.pages.flatMap((page) => page.data.data.users) || []
+
+  const renderContent = () => {
+    if (isLoading || isFetching) {
+      return (
+        <div className='flex items-center justify-center h-[100vh]'>
+          <Loading />
+        </div>
+      )
+    }
+    if (users.length === 0) {
+      return (
+        <h3 className='absolute top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
+          No users
+        </h3>
+      )
+    }
+    return (
+      <div className='px-4'>
+        <InfiniteScroll
+          dataLength={users.length}
+          hasMore={!!hasNextPage}
+          next={fetchNextPage}
+          loader={
+            <div className='flex justify-center items-center py-4 min-h-[80px]'>
+              <Loading />
+            </div>
+          }
+        >
+          {users.map((user: UserSuggestion) => (
+            <UserCardFollow key={user._id} user={user} type='' />
+          ))}
+        </InfiniteScroll>
+      </div>
+    )
+  }
 
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
@@ -59,16 +107,7 @@ export default function Explore() {
         </form>
       </div>
       {/* List User */}
-      <div className='px-4'>
-        {isLoading && (
-          <div className='flex items-center justify-center h-[100vh]'>
-            <Loading />
-          </div>
-        )}
-        {!isLoading &&
-          data?.data.data &&
-          data.data.data.users.map((user: UserSuggestion) => <UserCardFollow type='' key={user._id} user={user} />)}
-      </div>
+      {renderContent()}
     </div>
   )
 }

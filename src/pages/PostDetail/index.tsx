@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { PATH } from '../../constants/path'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import postApi from '../../apis/post.api'
 import Post from '../../components/Post'
 import type { PostType } from '../../types/post.type'
@@ -16,20 +16,19 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { schemaAddComment, type AddCommentFormValues } from '../../utils/validation'
 import { toast } from 'react-toastify'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import Loading from '../../components/Loading'
 
 function PostDetail() {
   const { avatar, name } = useContext(AppContext)
-
   const queryClient = useQueryClient()
+  const params = useParams()
 
-  const params: QueryConfig = useQueryParam()
-
+  const queryParams: QueryConfig = useQueryParam()
   const queryConfig: QueryConfig = {
-    limit: params.limit || 15,
-    page: params.page || 1
+    limit: queryParams.limit || 12,
+    page: queryParams.page || 1
   }
-
-  const param = useParams()
 
   const {
     register,
@@ -41,36 +40,39 @@ function PostDetail() {
   })
 
   const postQuery = useQuery({
-    queryKey: ['post', param.post_id],
-    queryFn: () => postApi.getPostDetail(param.post_id as string),
+    queryKey: ['post', params.post_id],
+    queryFn: () => postApi.getPostDetail(params.post_id as string),
     keepPreviousData: true
   })
 
-  const commentQuery = useQuery({
-    queryKey: ['comments', param.post_id],
-    queryFn: () => commentApi.getComments(param.post_id as string, queryConfig),
-    keepPreviousData: true
+  const commentQuery = useInfiniteQuery({
+    queryKey: ['comments', params.post_id],
+    queryFn: ({ pageParam = queryConfig.page }) =>
+      commentApi.getComments(params.post_id as string, { page: pageParam, limit: queryConfig.limit }),
+    keepPreviousData: true,
+    getNextPageParam: (lastpage) => {
+      const { pagination } = lastpage.data.data
+      return pagination.page < pagination.total_page ? pagination.page + 1 : undefined
+    }
   })
 
   const commentMutation = useMutation({
-    mutationFn: (body: { content: string }) => {
-      return commentApi.addComment(body, param.post_id as string)
+    mutationFn: (body: { content: string }) => commentApi.addComment(body, params.post_id as string),
+    onSuccess: () => {
+      reset()
+      queryClient.invalidateQueries({ queryKey: ['comments', params.post_id] })
+    },
+    onError: () => {
+      toast.warn(errors.content?.message)
     }
   })
 
   const handleSubmitComment = handleSubmit((data: AddCommentFormValues) => {
-    commentMutation.mutate(data, {
-      onSuccess: () => {
-        reset({
-          content: ''
-        })
-        queryClient.invalidateQueries({ queryKey: ['comments', param.post_id] })
-      },
-      onError: () => {
-        toast.warn(errors.content?.message)
-      }
-    })
+    commentMutation.mutate(data)
   })
+
+  const { data, hasNextPage, fetchNextPage, isLoading } = commentQuery
+  const commentList = data?.pages.flatMap((page) => page.data.data.comments) || []
 
   return (
     <div className='pb-[45px] md:pb-[5px] h-full flex flex-col'>
@@ -85,20 +87,33 @@ function PostDetail() {
         </Link>
         <h3 className='text-color_auth text-[18px] font-semibold ml-3'>Post</h3>
       </div>
+
       {/* Post */}
-      <div className=''>
-        {postQuery.data?.data.data &&
-          postQuery.data.data.data.map((post: PostType) => {
-            return <Post key={post._id} post={post} queryClient={queryClient} />
-          })}
-      </div>
+      {postQuery.data?.data.data &&
+        postQuery.data.data.data.map((post: PostType) => <Post key={post._id} post={post} queryClient={queryClient} />)}
+
       {/* List comment */}
-      <div className=''>
-        {commentQuery.data?.data.data &&
-          commentQuery.data.data.data.comments.map((comment: CommentType) => {
-            return <CommentCard key={comment._id} comment={comment} post_id={param.post_id as string} />
-          })}
-      </div>
+      {isLoading ? (
+        <div className='flex justify-center items-center py-4 min-h-[80px]'>
+          <Loading />
+        </div>
+      ) : (
+        <InfiniteScroll
+          dataLength={commentList.length}
+          hasMore={!!hasNextPage}
+          next={fetchNextPage}
+          loader={
+            <div className='flex justify-center items-center py-4 min-h-[80px]'>
+              <Loading />
+            </div>
+          }
+        >
+          {commentList.map((comment: CommentType) => (
+            <CommentCard key={comment._id} comment={comment} post_id={params.post_id as string} />
+          ))}
+        </InfiniteScroll>
+      )}
+
       {/* Submtit comment */}
       <div className='px-4 pt-6 bg-black mt-auto'>
         <form className='flex items-start gap-3' onSubmit={handleSubmitComment}>
@@ -115,7 +130,9 @@ function PostDetail() {
             }}
             placeholder='Post your reply'
           ></textarea>
-          <button className='text-black bg-white py-2.5 px-5 rounded-full font-semibold'>Reply</button>
+          <button className='text-black bg-white py-2.5 px-5 rounded-full font-semibold'>
+            {commentMutation.isLoading ? 'Loading...' : 'Post'}
+          </button>
         </form>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { PostType } from '../../types/post.type'
 import { Link, useNavigate } from 'react-router-dom'
 import ButtonIcon from '../ButtonIcon'
@@ -17,7 +17,6 @@ interface PropTypes {
 
 function Post({ post, queryClient }: PropTypes) {
   const { id } = useContext(AppContext)
-
   const navigate = useNavigate()
   const menuRef = useRef<HTMLDivElement | null>(null)
 
@@ -37,38 +36,41 @@ function Post({ post, queryClient }: PropTypes) {
     }
   })
 
-  const handleLike = (body: { post_id: string }) => {
-    likeToggle.toggle(body, isActiveLike)
-    setIsActiveLike(!isActiveLike)
-    setLikeCount(isActiveLike ? likeCount - 1 : likeCount + 1)
-  }
+  const handleLike = useCallback(
+    (body: { post_id: string }) => {
+      likeToggle.toggle(body, isActiveLike)
+      setIsActiveLike(!isActiveLike)
+      setLikeCount(isActiveLike ? likeCount - 1 : likeCount + 1)
+    },
+    [isActiveLike, likeToggle, post._id]
+  )
 
-  const handleBookmark = (body: { post_id: string }) => {
-    bookmarkToggle.toggle(body, isActiveBookmark)
-    setIsActiveBookmark(!isActiveBookmark)
-  }
+  const handleBookmark = useCallback(
+    (body: { post_id: string }) => {
+      bookmarkToggle.toggle(body, isActiveBookmark)
+      setIsActiveBookmark(!isActiveBookmark)
+    },
+    [isActiveBookmark, bookmarkToggle, post._id]
+  )
 
-  const handleDeletePost = (post_id: string) => {
-    deletePostMutation.mutate(post_id, {
-      onSuccess: () => {
-        setOpen(false)
-        queryClient.invalidateQueries({ queryKey: ['posts'] })
-        queryClient.invalidateQueries({ queryKey: ['profile'] })
-        queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
-        queryClient.invalidateQueries({ queryKey: ['profile_posts'] })
-        queryClient.invalidateQueries({ queryKey: ['profile_like_posts'] })
-      }
-    })
-  }
+  const handleDeletePost = useCallback(
+    (post_id: string) => {
+      deletePostMutation.mutate(post_id, {
+        onSuccess: () => {
+          const keys = ['posts', 'profile', 'bookmarks', 'profile_posts', 'profile_like_posts']
+          ;(setOpen(false), keys.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] })))
+        }
+      })
+    },
+    [deletePostMutation, queryClient]
+  )
 
   useEffect(() => {
     setIsActiveLike(!!post.isLiked)
     setLikeCount(post.like_count)
   }, [post.isLiked, post.like_count])
 
-  useEffect(() => {
-    setIsActiveBookmark(!!post.isBookmarked)
-  }, [post.isBookmarked])
+  useEffect(() => setIsActiveBookmark(!!post.isBookmarked), [post.isBookmarked])
 
   useEffect(() => {
     setCommentCount(post.comment_count)
@@ -86,9 +88,8 @@ function Post({ post, queryClient }: PropTypes) {
     }
   }, [])
 
-  // Lấy ra giá trị từ response trả về
-  const images = post.medias.filter((item) => item.type === 0)
-  const videos = post.medias.filter((item) => item.type === 1)
+  const images = useMemo(() => post.medias.filter((item) => item.type === 0), [post.medias])
+  const videos = useMemo(() => post.medias.filter((item) => item.type === 1), [post.medias])
 
   return (
     <div
@@ -109,6 +110,7 @@ function Post({ post, queryClient }: PropTypes) {
           className='w-10 h-10 rounded-full object-cover'
         />
       </Link>
+
       <div className='flex-1'>
         <div className='flex items-center justify-between'>
           {/* Author */}
@@ -140,6 +142,7 @@ function Post({ post, queryClient }: PropTypes) {
             <span>·</span>
             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           </Link>
+
           {/* Action update or delete post */}
           <div className='relative py-1' ref={menuRef}>
             {post.users._id === id && (
@@ -156,6 +159,7 @@ function Post({ post, queryClient }: PropTypes) {
                 </svg>
               </button>
             )}
+
             {/* Menudropdown */}
             {open && (
               <div className='absolute right-0 w-40 py-1 top-0 rounded-xl bg-black text-white border border-gray-700 overflow-hidden shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)] z-50'>
@@ -199,8 +203,10 @@ function Post({ post, queryClient }: PropTypes) {
             )}
           </div>
         </div>
+
         {/* Content */}
         <p className='text-white text-[15px] leading-[1.5] mt-1 whitespace-pre-wrap break-words'>{post.content}</p>
+
         {/* Media */}
         {videos.length === 1 && (
           <div
@@ -234,6 +240,7 @@ function Post({ post, queryClient }: PropTypes) {
             ))}
           </div>
         )}
+
         {/* Interactions */}
         <div className='flex justify-between text-[#71767B] text-[13px]'>
           <ButtonIcon

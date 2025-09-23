@@ -19,20 +19,19 @@ export default function ResetPassword() {
     resolver: yupResolver(schemaResetPassword)
   })
 
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const forgot_password_token = location.state.forgot_password_token
+
   const resetPasswordMutation = useMutation({
-    mutationFn: (body: { forgot_password_token: string; password: string; confirm_password: string }) => {
-      return authApi.resetPassword(body)
-    },
+    mutationFn: (body: { forgot_password_token: string; password: string; confirm_password: string }) =>
+      authApi.resetPassword(body),
     onSuccess: () => {
       toast.success(MESSAGE.CHANGE_PASSWORD_SUCCESSFULLY)
       navigate(PATH.SIGN_IN)
     }
   })
-
-  const location = useLocation()
-  const navigate = useNavigate()
-
-  const forgot_password_token = location.state.forgot_password_token
 
   const handleSubmitForm = handleSubmit((data: { password: string; confirm_password: string }) => {
     resetPasswordMutation.mutate({

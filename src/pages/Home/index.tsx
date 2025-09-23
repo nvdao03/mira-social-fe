@@ -12,42 +12,30 @@ import Post from '../../components/Post'
 import type { PostType } from '../../types/post.type'
 import Loading from '../../components/Loading'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import useQueryParam from '../../hooks/useQueryParam'
+import type { QueryConfig } from '../../configs/query.config'
 
 function Home() {
-  const {
-    id,
-    avatar,
-    name,
-    username,
-    refreshToken,
-    setIsauthenticated,
-    setRefreshToken,
-    setAvatar,
-    setUsername,
-    setName
-  } = useContext(AppContext)
-
+  const { id, avatar, name, username, refreshToken, resetAppContext } = useContext(AppContext)
   const queryClient = useQueryClient()
-
   const navigate = useNavigate()
+
+  const params: QueryConfig = useQueryParam()
+  const queryParams: QueryConfig = {
+    limit: params.limit || 15,
+    page: params.page || 1
+  }
 
   const [isActive, setIsActive] = useState<'For you' | 'Followings'>('For you')
   const [openSidebar, setOpenSidebar] = useState(false)
 
   const postListQuery = useInfiniteQuery({
     queryKey: ['posts', isActive],
-    // Khi dùng useInfiniteQuery nó chỉ nhận tham số pageParam dùng để tính toán page tiếp theo, chứ ko truyền cứng giá trị page bàng paramConfig được
-    queryFn: ({ pageParam = 1 }) => {
+    queryFn: ({ pageParam = queryParams.page }) => {
       if (isActive === 'For you') {
-        return postApi.getPosts({
-          page: pageParam,
-          limit: 10
-        })
+        return postApi.getPosts({ page: pageParam, limit: queryParams.limit })
       } else {
-        return postApi.getPostFollwing({
-          page: pageParam,
-          limit: 10
-        })
+        return postApi.getPostFollowing({ page: pageParam, limit: queryParams.limit })
       }
     },
     getNextPageParam: (lastPage) => {
@@ -57,28 +45,53 @@ function Home() {
   })
 
   const logoutMutation = useMutation({
-    mutationFn: (body: { refresh_token: string }) => authApi.logout(body)
+    mutationFn: (body: { refresh_token: string }) => authApi.logout(body),
+    onSuccess: () => {
+      resetAppContext()
+      navigate(PATH.SIGN_IN)
+    }
   })
 
   const handleLogout = () => {
-    logoutMutation.mutate(
-      { refresh_token: refreshToken },
-      {
-        onSuccess: () => {
-          setIsauthenticated(false)
-          setRefreshToken('')
-          setAvatar('')
-          setUsername('')
-          setName('')
-          navigate(PATH.SIGN_IN)
-        }
-      }
-    )
+    logoutMutation.mutate({ refresh_token: refreshToken })
   }
 
   const { data, isLoading, fetchNextPage, hasNextPage } = postListQuery
 
   const posts: PostType[] = data?.pages.flatMap((page) => page.data.data.posts) || []
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className='w-full flex items-center justify-center h-[100vh]'>
+          <Loading />
+        </div>
+      )
+    }
+    if (posts.length === 0) {
+      return (
+        <div className='flex-1 flex items-center justify-center min-h-[calc(100vh-150px)] lg:min-h-[calc(100vh-70px)]'>
+          <span>No post</span>
+        </div>
+      )
+    }
+    return (
+      <InfiniteScroll
+        dataLength={posts.length}
+        next={fetchNextPage}
+        hasMore={!!hasNextPage}
+        loader={
+          <div className='flex justify-center items-center py-4 min-h-[80px]'>
+            <Loading />
+          </div>
+        }
+      >
+        {posts.map((post: PostType) => (
+          <Post key={post._id} post={post} queryClient={queryClient} />
+        ))}
+      </InfiniteScroll>
+    )
+  }
 
   return (
     <div className='relative pb-[45px] md:pb-[6px]'>
@@ -89,6 +102,7 @@ function Home() {
           onClick={() => setOpenSidebar(false)}
         ></div>
       )}
+
       {/* sidebar on mobile */}
       <div
         className={`fixed top-0 left-0 h-full w-72 bg-black text-white z-50 transform transition-transform duration-300 ease-in-out ${
@@ -99,7 +113,7 @@ function Home() {
           <img src={avatar || AvatarDefault} alt='avatar' className='w-10 h-10 rounded-full' />
           <div className='mt-2 text-color_text text-[17px]'>
             <h2 className='font-semibold text-[17px]'>{name}</h2>
-            <p className='text-[15px] text-[#71767B] mt-2'>@{username}</p>
+            <p className='text-[15px] text-[#71767B] mt-2'>{username}</p>
           </div>
         </div>
         <nav className='px-3 py-0'>
@@ -140,11 +154,12 @@ function Home() {
           <span>Logout</span>
         </button>
       </div>
+
       {/* Tabs */}
       <header className='sticky z-10 top-0 border-solid border-b border-[#2E3235] bg-black md:block'>
         <div className='items-center px-4 pt-3 flex md:hidden'>
           <div className='w-[32px] h-[32px] md:hidden cursor-pointer' onClick={() => setOpenSidebar(true)}>
-            <img src={avatar ? avatar : AvatarDefault} alt='avatar' className='w-full h-full rounded-full' />
+            <img src={avatar || AvatarDefault} alt='avatar' className='w-full h-full rounded-full' />
           </div>
           <Link to={PATH.HOME} className='mx-auto'>
             <img src={Logo} alt='logo' className='w-[30px] h-[30]' />
@@ -167,33 +182,9 @@ function Home() {
           ))}
         </div>
       </header>
+
       {/* List Post */}
-      <div className='mt-1'>
-        {isLoading ? (
-          <div className='w-full flex items-center justify-center h-[100vh]'>
-            <Loading />
-          </div>
-        ) : posts.length === 0 ? (
-          <div className='flex-1 flex items-center justify-center min-h-[calc(100vh-150px)] lg:min-h-[calc(100vh-70px)]'>
-            <span>No post</span>
-          </div>
-        ) : (
-          <InfiniteScroll
-            dataLength={posts.length}
-            next={fetchNextPage}
-            hasMore={!!hasNextPage}
-            loader={
-              <div className='flex justify-center items-center py-4 min-h-[80px]'>
-                <Loading />
-              </div>
-            }
-          >
-            {posts.map((post: PostType) => (
-              <Post key={post._id} post={post} queryClient={queryClient} />
-            ))}
-          </InfiniteScroll>
-        )}
-      </div>
+      {renderContent()}
     </div>
   )
 }

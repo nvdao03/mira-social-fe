@@ -35,46 +35,45 @@ function SignUp() {
   })
 
   const signUpMutation = useMutation({
-    mutationFn: (body: SignUpFormData) => authApi.signUp(body)
-  })
-
-  const handleSubmuitForm = handleSubmit((data: SignUpFormData) => {
-    signUpMutation.mutate(data, {
-      onSuccess: (response) => {
-        toast.success(MESSAGE.CREATE_ACCOUNT_SUCCESSFULLY)
-        setIsauthenticated(true)
-        setRefreshToken(response.data.data.refresh_token)
-        setAvatar(response.data.data.user.avatar)
-        setUsername(response.data.data.user.username)
-        setName(response.data.data.user.name)
-        setId(response.data.data.user.id)
-        navigate(PATH.HOME)
-      },
-      onError: (error: any) => {
-        if (error.response.status === HTTP_STATUS.UNPROCESSABLE_ENTITY) {
-          const formError = error.response.data.errors
-          if (formError.email) {
-            setError('email', {
-              message: formError.email.message,
-              type: 'Server'
-            })
-          }
-          if (formError.password) {
-            setError('password', {
-              message: formError.password.message,
-              type: 'Server'
-            })
-          }
+    mutationFn: (body: SignUpFormData) => authApi.signUp(body),
+    onSuccess: (response) => {
+      toast.success(MESSAGE.CREATE_ACCOUNT_SUCCESSFULLY)
+      setIsauthenticated(true)
+      setRefreshToken(response.data.data.refresh_token)
+      setAvatar(response.data.data.user.avatar)
+      setUsername(response.data.data.user.username)
+      setName(response.data.data.user.name)
+      setId(response.data.data.user.id)
+      navigate(PATH.HOME)
+    },
+    onError: (error: any) => {
+      if (error.response.status === HTTP_STATUS.UNPROCESSABLE_ENTITY) {
+        const formError = error.response.data.errors
+        if (formError.email) {
+          setError('email', {
+            message: formError.email.message,
+            type: 'Server'
+          })
         }
-        if (error.response.status === HTTP_STATUS.SERVER_ERROR) {
-          const message = error.response.data.message
-          setError('username', {
-            message: message,
+        if (formError.password) {
+          setError('password', {
+            message: formError.password.message,
             type: 'Server'
           })
         }
       }
-    })
+      if (error.response.status === HTTP_STATUS.SERVER_ERROR) {
+        const message = error.response.data.message
+        setError('username', {
+          message: message,
+          type: 'Server'
+        })
+      }
+    }
+  })
+
+  const handleSubmuitForm = handleSubmit((data: SignUpFormData) => {
+    signUpMutation.mutate(data)
   })
 
   return (

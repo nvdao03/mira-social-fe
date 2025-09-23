@@ -14,14 +14,7 @@ import { useContext, useEffect } from 'react'
 import { AppContext } from '../../contexts/app.context'
 import { HTTP_STATUS } from '../../constants/httpStatus'
 import useQueryParam from '../../hooks/useQueryParam'
-import {
-  saveAccessTokenFromLocalStorage,
-  saveAvatarFromLocalStorage,
-  saveIdFromLocalStorage,
-  saveNameFromLocalStorage,
-  saveRefreshTokenFromLocalStorage,
-  saveUsernameFromLocalStorage
-} from '../../utils/auth'
+import { saveAccessToken, saveId, saveName, saveRefreshToken, saveUsername } from '../../utils/auth'
 
 type SignInFromData = SignInFormValues
 
@@ -50,37 +43,36 @@ function SignIn() {
   })
 
   const signInMutation = useMutation({
-    mutationFn: (body: SignInFromData) => authApi.signIn(body)
+    mutationFn: (body: SignInFromData) => authApi.signIn(body),
+    onSuccess: (response) => {
+      toast.success(MESSAGE.LOGIN_SUCCESSFULLY)
+      setIsauthenticated(true)
+      setRefreshToken(response.data.data.refresh_token)
+      setAvatar(response.data.data.user.avatar)
+      setUsername(response.data.data.user.username)
+      setName(response.data.data.user.name)
+      setId(response.data.data.user.id)
+      navigate(PATH.HOME)
+    },
+    onError: (error: any) => {
+      if (error.response.status === HTTP_STATUS.UNPROCESSABLE_ENTITY) {
+        const formError = error.response.data.errors
+        if (formError.email) {
+          setError('email', {
+            message: formError.email.message,
+            type: 'Server'
+          })
+          setError('password', {
+            message: formError.email.message,
+            type: 'Server'
+          })
+        }
+      }
+    }
   })
 
   const handleSubmitForm = handleSubmit((data: SignInFromData) => {
-    signInMutation.mutate(data, {
-      onSuccess: (response) => {
-        toast.success(MESSAGE.LOGIN_SUCCESSFULLY)
-        setIsauthenticated(true)
-        setRefreshToken(response.data.data.refresh_token)
-        setAvatar(response.data.data.user.avatar)
-        setUsername(response.data.data.user.username)
-        setName(response.data.data.user.name)
-        setId(response.data.data.user.id)
-        navigate(PATH.HOME)
-      },
-      onError: (error: any) => {
-        if (error.response.status === HTTP_STATUS.UNPROCESSABLE_ENTITY) {
-          const formError = error.response.data.errors
-          if (formError.email) {
-            setError('email', {
-              message: formError.email.message,
-              type: 'Server'
-            })
-            setError('password', {
-              message: formError.email.message,
-              type: 'Server'
-            })
-          }
-        }
-      }
-    })
+    signInMutation.mutate(data)
   })
 
   useEffect(() => {
@@ -89,17 +81,15 @@ function SignIn() {
       const data = params as unknown as OauthParamsType
       const { access_token, avatar, id, name, refresh_token, username } = data
 
-      if (!access_token || !id) {
-        return
-      }
+      if (!access_token || !id) return
 
       setIsauthenticated(true)
-      saveAccessTokenFromLocalStorage(access_token)
-      saveRefreshTokenFromLocalStorage(refresh_token)
-      saveIdFromLocalStorage(id)
-      saveAvatarFromLocalStorage(avatar)
-      saveNameFromLocalStorage(name)
-      saveUsernameFromLocalStorage(username)
+      saveAccessToken(access_token)
+      saveRefreshToken(refresh_token)
+      saveId(id)
+      setAvatar(avatar)
+      saveName(name)
+      saveUsername(username)
 
       setRefreshToken(refresh_token)
       setId(id)

@@ -1,41 +1,45 @@
 import React, { createContext, useState } from 'react'
-import {
-  getAccessTokenFromLocalStorage,
-  getAvatarFromLocalStorage,
-  getIdFromLocalStorage,
-  getNameFromLocalStorage,
-  getRefreshTokenFromLocalStorage,
-  getUsernameFromLocalStorage
-} from '../utils/auth'
+import { getAccessToken, getAvatar, getId, getName, getRefreshToken, getUsername } from '../utils/auth'
 
+// --- AppContext Type ---
 interface AppContextType {
+  id: string
   isAuthenticated: boolean
   refreshToken: string
   avatar: string
   username: string
   name: string
-  id: string
+
   setIsauthenticated: React.Dispatch<React.SetStateAction<boolean>>
   setRefreshToken: React.Dispatch<React.SetStateAction<string>>
   setAvatar: React.Dispatch<React.SetStateAction<string>>
   setUsername: React.Dispatch<React.SetStateAction<string>>
   setName: React.Dispatch<React.SetStateAction<string>>
   setId: React.Dispatch<React.SetStateAction<string>>
+  resetAppContext: () => void
 }
 
+// --- Inital Value ---
+const initialValues = {
+  id: getId() as string,
+  isAuthenticated: Boolean(getAccessToken()),
+  refreshToken: getRefreshToken() as string,
+  avatar: getAvatar() as string,
+  username: getUsername() as string,
+  name: getName() as string
+}
+
+// --- Inital Context ---
 export const initalAppContext: AppContextType = {
-  isAuthenticated: Boolean(getAccessTokenFromLocalStorage()),
-  refreshToken: getRefreshTokenFromLocalStorage() as string,
-  avatar: getAvatarFromLocalStorage() as string,
-  username: getUsernameFromLocalStorage() as string,
-  name: getNameFromLocalStorage() as string,
-  id: getIdFromLocalStorage() as string,
+  ...initialValues,
+
   setIsauthenticated: () => null,
   setRefreshToken: () => null,
   setAvatar: () => null,
   setUsername: () => null,
   setName: () => null,
-  setId: () => null
+  setId: () => null,
+  resetAppContext: () => null
 }
 
 export const AppContext = createContext<AppContextType>(initalAppContext)
@@ -47,6 +51,15 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [username, setUsername] = useState<string>(initalAppContext.username)
   const [name, setName] = useState<string>(initalAppContext.name)
   const [id, setId] = useState<string>(initalAppContext.id)
+
+  const resetAppContext = () => {
+    setIsauthenticated(false)
+    setRefreshToken('')
+    setAvatar('')
+    setUsername('')
+    setName('')
+    setId('')
+  }
 
   return (
     <AppContext.Provider
@@ -62,7 +75,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setAvatar,
         setName,
         setUsername,
-        setId
+        setId,
+        resetAppContext
       }}
     >
       {children}

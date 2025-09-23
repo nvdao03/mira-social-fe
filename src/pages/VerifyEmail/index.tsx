@@ -4,21 +4,13 @@ import { useMutation } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
 import useQueryParam from '../../hooks/useQueryParam'
 import type { QueryConfig } from '../../configs/query.config'
-import {
-  saveAccessTokenFromLocalStorage,
-  saveAvatarFromLocalStorage,
-  saveIdFromLocalStorage,
-  saveNameFromLocalStorage,
-  saveRefreshTokenFromLocalStorage,
-  saveUsernameFromLocalStorage
-} from '../../utils/auth'
+import { saveAccessToken, saveAvatar, saveId, saveName, saveRefreshToken, saveUsername } from '../../utils/auth'
 import { useNavigate } from 'react-router-dom'
 import { PATH } from '../../constants/path'
 import { HTTP_STATUS } from '../../constants/httpStatus'
 
 export default function VerifyEmail() {
   const queryParams: QueryConfig = useQueryParam()
-
   const queryConfig: QueryConfig = {
     email_verify_token: queryParams.email_verify_token || ''
   }
@@ -28,14 +20,12 @@ export default function VerifyEmail() {
     onSuccess: async (data) => {
       if (!data.data.data) return
 
-      console.log(data)
-
-      saveAccessTokenFromLocalStorage(data.data.data.access_token)
-      saveRefreshTokenFromLocalStorage(data.data.data.refresh_token)
-      saveIdFromLocalStorage(data.data.data.user.id)
-      saveAvatarFromLocalStorage(data.data.data.user.avatar)
-      saveUsernameFromLocalStorage(data.data.data.user.username)
-      saveNameFromLocalStorage(data.data.data.user.name)
+      saveAccessToken(data.data.data.access_token)
+      saveRefreshToken(data.data.data.refresh_token)
+      saveId(data.data.data.user.id)
+      saveAvatar(data.data.data.user.avatar)
+      saveUsername(data.data.data.user.username)
+      saveName(data.data.data.user.name)
 
       setMessage(data.data.message)
       setStatus('success')

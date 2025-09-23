@@ -1,24 +1,24 @@
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import {
-  getAccessTokenFromLocalStorage,
-  getAvatarFromLocalStorage,
-  getIdFromLocalStorage,
-  getNameFromLocalStorage,
-  getRefreshTokenFromLocalStorage,
-  getUsernameFromLocalStorage,
-  removeAccessTokenFromLocalStorage,
-  removeAvatarFromLocalStorage,
-  removeIdFromLocalStorage,
-  removeNameFromLocalStorage,
-  removeRefreshTokenFromLocalStorage,
-  removeUsernameFromLocalStorage,
-  saveAccessTokenFromLocalStorage,
-  saveAvatarFromLocalStorage,
-  saveIdFromLocalStorage,
-  saveNameFromLocalStorage,
-  saveRefreshTokenFromLocalStorage,
-  saveUsernameFromLocalStorage
+  getAccessToken,
+  getAvatar,
+  getId,
+  getName,
+  getRefreshToken,
+  getUsername,
+  removeAccessToken,
+  removeAvatar,
+  removeId,
+  removeName,
+  removeRefreshToken,
+  removeUsername,
+  saveAccessToken,
+  saveAvatar,
+  saveId,
+  saveName,
+  saveRefreshToken,
+  saveUsername
 } from './auth'
 
 const URL = import.meta.env.VITE_API_ROOT
@@ -33,30 +33,27 @@ class Http {
   private id: string
 
   constructor() {
-    this.access_token = getAccessTokenFromLocalStorage()
-    this.refresh_token = getRefreshTokenFromLocalStorage()
-    this.avatar = getAvatarFromLocalStorage() || ''
-    this.username = getUsernameFromLocalStorage()
-    this.name = getNameFromLocalStorage()
-    this.id = getIdFromLocalStorage()
+    this.access_token = getAccessToken()
+    this.refresh_token = getRefreshToken()
+    this.avatar = getAvatar() || ''
+    this.username = getUsername()
+    this.name = getName()
+    this.id = getId()
     this.instance = axios.create({
       baseURL: URL,
       timeout: 60000
     })
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        const access_token = getAccessTokenFromLocalStorage()
-
+        const access_token = getAccessToken()
         if (access_token && config.headers) {
           config.headers.Authorization = `Bearer ${access_token}`
         }
-
         if (config.data instanceof FormData) {
           config.headers['Content-Type'] = 'multipart/form-data'
         } else {
           config.headers['Content-Type'] = 'application/json'
         }
-
         return config
       },
       (error) => {
@@ -67,18 +64,19 @@ class Http {
       (response) => {
         const { url } = response.config
         if (url === '/auth/sign-in' || url === '/auth/sign-up') {
+          console.log(response)
           this.access_token = response.data.data.access_token
           this.refresh_token = response.data.data.refresh_token
           this.avatar = response.data.data.user.avatar || ''
           this.username = response.data.data.user.username
           this.name = response.data.data.user.name
           this.id = response.data.data.user.id
-          saveAccessTokenFromLocalStorage(this.access_token)
-          saveRefreshTokenFromLocalStorage(this.refresh_token)
-          saveAvatarFromLocalStorage(this.avatar)
-          saveUsernameFromLocalStorage(this.username)
-          saveNameFromLocalStorage(this.name)
-          saveIdFromLocalStorage(this.id)
+          saveAccessToken(this.access_token)
+          saveRefreshToken(this.refresh_token)
+          saveAvatar(this.avatar)
+          saveUsername(this.username)
+          saveName(this.name)
+          saveId(this.id)
         } else if (url === '/auth/logout') {
           this.access_token = ''
           this.refresh_token = ''
@@ -86,12 +84,12 @@ class Http {
           this.avatar = ''
           this.username = ''
           this.id = ''
-          removeAccessTokenFromLocalStorage()
-          removeRefreshTokenFromLocalStorage()
-          removeAvatarFromLocalStorage()
-          removeUsernameFromLocalStorage()
-          removeNameFromLocalStorage()
-          removeIdFromLocalStorage()
+          removeAccessToken()
+          removeRefreshToken()
+          removeAvatar()
+          removeUsername()
+          removeName()
+          removeId()
         }
         return response
       },

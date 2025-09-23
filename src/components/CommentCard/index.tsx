@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import AvatarDefault from '../../assets/imgs/avatar-default.png'
 import type { CommentType } from '../../types/comment.type'
 import { AppContext } from '../../contexts/app.context'
@@ -12,15 +12,15 @@ interface PropTypes {
 
 function CommentCard({ comment, post_id }: PropTypes) {
   const { id } = useContext(AppContext)
-
   const queryClient = useQueryClient()
-
   const menuRef = useRef<HTMLDivElement | null>(null)
   const [open, setOpen] = useState<boolean>(false)
 
   const commentMutation = useMutation({
-    mutationFn: (comment_id: string) => {
-      return commentApi.deleteComment(comment_id)
+    mutationFn: (comment_id: string) => commentApi.deleteComment(comment_id),
+    onSuccess: () => {
+      setOpen(false)
+      queryClient.invalidateQueries({ queryKey: ['comments', post_id] })
     }
   })
 
@@ -32,19 +32,12 @@ function CommentCard({ comment, post_id }: PropTypes) {
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleDeleteComment = (comment_id: string) => {
-    commentMutation.mutate(comment_id, {
-      onSuccess: () => {
-        setOpen(false)
-        queryClient.invalidateQueries({ queryKey: ['comments', post_id] })
-      }
-    })
-  }
+  const handleDelete = useCallback(() => {
+    commentMutation.mutate(comment._id.toString())
+  }, [comment._id, commentMutation])
 
   return (
     <div className='flex items-start px-4 py-5 gap-x-3 border-b border-solid border-[#2e3235]'>
@@ -91,7 +84,7 @@ function CommentCard({ comment, post_id }: PropTypes) {
         {open && (
           <div className='absolute right-0 mt-2 w-40 bottom-0 rounded-xl bg-black text-white border border-gray-700 overflow-hidden shadow-[0_0_12px_rgba(255,255,255,0.15),0_0_24px_rgba(255,255,255,0.05)] z-50'>
             <button
-              onClick={() => handleDeleteComment(comment._id.toString() as string)}
+              onClick={handleDelete}
               className='px-4 py-2 text-[15px] flex items-center gap-x-3 text-[#f4212e] font-semibold w-full cursor-pointer'
             >
               <svg viewBox='0 0 24 24' aria-hidden='true' className='inline-block h-5 w-5 fill-[#f4212e]'>

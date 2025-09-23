@@ -22,31 +22,30 @@ export default function ChangePassword() {
     resolver: yupResolver(schemaChangePassword)
   })
 
-  const changePasswordMutation = useMutation({
-    mutationFn: (body: ChangePasswordFormValues) => authApi.changePassword(body)
-  })
-
   const current_password = watch('current_password')
   const new_password = watch('new_password')
   const confirm_password = watch('confirm_password')
 
   const isEnable = current_password !== '' && new_password !== '' && confirm_password !== ''
 
-  const handleChangePassword = handleSubmit((data: ChangePasswordFormValues) => {
-    changePasswordMutation.mutate(data, {
-      onSuccess: () => {
-        reset()
-        toast.success(MESSAGE.CHANGE_PASSWORD_SUCCESSFULLY)
-      },
-      onError: (error: any) => {
-        if (error.response.status === HTTP_STATUS.UNAUTHORIZED) {
-          const formError = error.response.data
-          setError('current_password', {
-            message: formError.message
-          })
-        }
+  const changePasswordMutation = useMutation({
+    mutationFn: (body: ChangePasswordFormValues) => authApi.changePassword(body),
+    onSuccess: () => {
+      reset()
+      toast.success(MESSAGE.CHANGE_PASSWORD_SUCCESSFULLY)
+    },
+    onError: (error: any) => {
+      if (error.response.status === HTTP_STATUS.UNAUTHORIZED) {
+        const formError = error.response.data
+        setError('current_password', {
+          message: formError.message
+        })
       }
-    })
+    }
+  })
+
+  const handleChangePassword = handleSubmit((data: ChangePasswordFormValues) => {
+    changePasswordMutation.mutate(data)
   })
 
   return (

@@ -15,83 +15,98 @@ interface PropTypes {
 
 function UserCardFollow({ user, type }: PropTypes) {
   const { id } = useContext(AppContext)
-
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const params = useParams<{ user_id: string }>()
 
   const queryParams: QueryConfig = useQueryParam()
-
   const queryConfig: QueryConfig = {
     page: queryParams.page || 1,
     limit: queryParams.limit || 100
   }
 
-  const navigate = useNavigate()
-  const params = useParams()
-
   const [isHovered, setIsHovered] = useState<boolean>(false) // Thay đổi text following || unfollow
   const [isFollowing, setIsFollowing] = useState<boolean>(false) // Thay đổi text following || follow back
 
-  const isUserProfile = Boolean(params.user_id === id) // Check điều kiện phải là đang ở trang profile của user login thì mới hiện các nút following || unfollow hoặc follow back
+  // Check điều kiện phải là đang ở trang profile của user login thì mới hiện các nút following || unfollow hoặc follow back
+  const isUserProfile = Boolean(params.user_id === id)
 
   const getFollowingsQuery = useQuery({
     queryKey: ['followings', params.user_id],
     queryFn: () => followApi.getFollowings(params.user_id as string, queryConfig),
-    keepPreviousData: true
+    keepPreviousData: true,
+    enabled: Boolean(params.user_id) // chỉ gọi API khi có user_id
   })
 
   const unfollowMutation = useMutation({
-    mutationFn: (user_id: string) => {
-      return followApi.unfollow(user_id)
+    mutationFn: (user_id: string) => followApi.unfollow(user_id),
+    onSuccess: () => {
+      const keys = ['user_not_follow_suggestions', 'profile', 'followings', 'followers']
+      keys.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }))
     }
   })
 
   const followMutation = useMutation({
-    mutationFn: (body: { followed_user_id: string }) => {
-      return followApi.follow(body)
+    mutationFn: (body: { followed_user_id: string }) => followApi.follow(body),
+    onSuccess: () => {
+      const keys = ['user_not_follow_suggestions', 'profile', 'followings', 'followers']
+      keys.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }))
     }
   })
 
-  const handleUnfollow = (user_id: string) => {
-    unfollowMutation.mutate(user_id, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['user_not_follow_suggestions'] })
-        queryClient.invalidateQueries({ queryKey: ['profile'] })
-        queryClient.invalidateQueries({ queryKey: ['followings'] })
-        queryClient.invalidateQueries({ queryKey: ['followers'] })
-      }
-    })
+  const handleFollowToggle = () => {
+    if (isFollowing) {
+      unfollowMutation.mutate(user._id)
+    } else {
+      followMutation.mutate({ followed_user_id: user._id })
+    }
+    setIsFollowing(!isFollowing)
   }
 
-  const handleFollow = (body: { followed_user_id: string }) => {
-    followMutation.mutate(body, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['user_not_follow_suggestions'] })
-        queryClient.invalidateQueries({ queryKey: ['profile'] })
-        queryClient.invalidateQueries({ queryKey: ['followings'] })
-        queryClient.invalidateQueries({ queryKey: ['followers'] })
-      }
-    })
-  }
-
-  // Xử lý nếu params thay đổi sẽ gọi lại call back
   useEffect(() => {
-    if (!getFollowingsQuery.data?.data.data.followers.length) {
-      return
+    const followings = getFollowingsQuery.data?.data.data.followings ?? []
+    const isFollowBack = followings.some((u: any) => u.user_followings._id === user._id)
+    setIsFollowing(isFollowBack)
+  }, [getFollowingsQuery.data, user._id])
+
+  const renderButton = () => {
+    if (!isUserProfile) return null
+    if (type === 'Followings' || (type === 'Followers' && isFollowing)) {
+      return (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            handleFollowToggle()
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`border border-solid min-w-[99px] font-semibold text-[14px] rounded-full px-4 py-2 transition-all duration-200 ease-in-out ${
+            isHovered
+              ? 'bg-[#f4212e1a] border-[#67070f] text-[#f4212e]'
+              : 'bg-[#eff3f4] border-[#eff3f4] text-[#0F1419]'
+          }`}
+        >
+          {isHovered ? 'Unfollow' : 'Following'}
+        </button>
+      )
     }
-    // Mảng lưu danh sách id của những người mà ta đã follow
-    const user_ids_following = getFollowingsQuery.data?.data.data.followers.map((user: any) => {
-      return user.user_followings._id
-    })
-    // Check điều kiện, nếu user này ta đã follow nó rồi thì hiển thị followings, nếu chưa follow nó thì hiển thị follow back
-    const isFollowBack: boolean = user_ids_following.some((user_id_following: string) => {
-      // Kiểm tra thằng user card đang được render, id của nó có trong danh sách những id user mình đã follow hay không
-      return user_id_following === user._id
-    })
-    // Nếu thằng user card đang được render, nó nằm trong danh sách những id user mình follow, thì hiển thị chữ following, ngọc lập thì hiển thị follow back
-    if (isFollowBack) {
-      setIsFollowing(true)
+    if (type === 'Followers' && !isFollowing) {
+      return (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            handleFollowToggle()
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className='border border-solid text-[#0F1419] min-w-[99px] font-semibold bg-[#eff3f4] hover:opacity-85 text-[14px] rounded-full px-4 py-2 transition-all duration-200 ease-in-out'
+        >
+          Follow back
+        </button>
+      )
     }
-  }, [params.user_id, getFollowingsQuery.data, user._id])
+    return null
+  }
 
   return (
     <div onClick={() => navigate(`/${user._id}`)} className='flex items-center justify-between py-4 cursor-pointer'>
@@ -120,50 +135,7 @@ function UserCardFollow({ user, type }: PropTypes) {
           <span className='text-[#71767B] text-[13px] w-full mt-1'>{user.username}</span>
         </div>
       </div>
-      {/* Xử lý: Nếu là user đang login và nếu đang ở component Followings thì hiện nút following và hover vào hiển thị unfollow */}
-      {isUserProfile && type === 'Followings' && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            handleUnfollow(user._id)
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className={`border border-solid text-[#0F1419] min-w-[99px] font-semibold bg-[#eff3f4] text-[14px] rounded-full px-4 py-2 transition-all duration-200 ease-in-out ${isHovered && 'bg-[#f4212e1a] border border-solid border-[#67070f] text-[#f4212e]'}`}
-        >
-          {isHovered ? 'Unfollow' : 'Following'}
-        </button>
-      )}
-      {/* Xử lý: Nếu là user đang login và nếu đang ở component Followers và nếu user card đang được render đã được mình follow rồi thì hiện thị nút Following và hover vào hiển thị Unfollow  */}
-      {isUserProfile && type === 'Followers' && isFollowing && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            handleUnfollow(user._id)
-            setIsFollowing(!isFollowing)
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className={`border border-solid text-[#0F1419] min-w-[99px] font-semibold bg-[#eff3f4] border-[#eff3f4] text-[14px] rounded-full px-4 py-2 transition-all duration-200 ease-in-out ${isHovered && 'bg-[#f4212e1a] border-[#67070f] text-[#f4212e]'}`}
-        >
-          {isHovered ? 'Unfollow' : 'Following'}
-        </button>
-      )}
-      {/* Xử lý: Nếu là user đang login và nếu đang ở component Followers và nếu user card đang được render chưa được mình follow thì hiện thị nút Follow back và call API follow */}
-      {isUserProfile && type === 'Followers' && !isFollowing && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            handleFollow({ followed_user_id: user._id })
-            setIsFollowing(!isFollowing)
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className={`border border-solid text-[#0F1419] min-w-[99px] font-semibold bg-[#eff3f4] hover:opacity-85 border-[#eff3f4] text-[14px] rounded-full px-4 py-2 transition-all duration-200 ease-in-out`}
-        >
-          Follow back
-        </button>
-      )}
+      {renderButton()}
     </div>
   )
 }

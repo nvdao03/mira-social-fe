@@ -12,7 +12,7 @@ export default function Connect() {
     queryFn: ({ pageParam = 1 }) => {
       return userApi.getUserSuggestions({
         page: pageParam,
-        limit: 10
+        limit: 15
       })
     },
     keepPreviousData: true,
@@ -25,6 +25,42 @@ export default function Connect() {
   const { data, isLoading, fetchNextPage, hasNextPage } = getUserSuggestionsQuery
 
   const userList = data?.pages.flatMap((page) => page.data.data.users) || []
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className='w-full flex items-center justify-center h-[100vh]'>
+          <Loading />
+        </div>
+      )
+    }
+    if (userList.length === 0) {
+      return (
+        <h3 className='absolute mt-[50px] md:mt-[40px] xl:mt-[40px] top-[50%] left-[50%] right-[50%] -translate-x-[50%] text-color_auth text-[16px] w-full text-center'>
+          No users
+        </h3>
+      )
+    }
+    return (
+      <InfiniteScroll
+        dataLength={userList.length}
+        next={fetchNextPage}
+        hasMore={!!hasNextPage}
+        loader={
+          <div className='flex justify-center items-center py-4 min-h-[80px]'>
+            <Loading />
+          </div>
+        }
+        // endMessage={<p className='text-center text-[#71767B] py-4'>End 👀</p>}
+      >
+        <div className='flex flex-col'>
+          {userList.map((user: any) => (
+            <UserCard key={user.unfollowed_users._id} user={user.unfollowed_users} />
+          ))}
+        </div>
+      </InfiniteScroll>
+    )
+  }
 
   return (
     <div className='relative pb-[45px] md:pb-[5px]'>
@@ -40,32 +76,7 @@ export default function Connect() {
         <h3 className='text-color_auth text-[18px] font-semibold ml-3'>Connect</h3>
       </div>
       {/* List Users */}
-      <div className='px-4'>
-        {isLoading && (
-          <div className='flex justify-center items-center h-[100vh]'>
-            <Loading />
-          </div>
-        )}
-        {!isLoading && (
-          <InfiniteScroll
-            dataLength={userList.length}
-            next={fetchNextPage}
-            hasMore={!!hasNextPage}
-            loader={
-              <div className='flex justify-center items-center py-4 min-h-[80px]'>
-                <Loading />
-              </div>
-            }
-            // endMessage={<p className='text-center text-[#71767B] py-4'>End 👀</p>}
-          >
-            <div className='flex flex-col'>
-              {userList.map((user: any) => (
-                <UserCard key={user.unfollowed_users._id} user={user.unfollowed_users} />
-              ))}
-            </div>
-          </InfiniteScroll>
-        )}
-      </div>
+      <div className='px-4'>{renderContent()}</div>
     </div>
   )
 }

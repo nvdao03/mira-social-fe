@@ -1,71 +1,42 @@
-export const saveAccessTokenFromLocalStorage = (accessToken: string) => {
-  localStorage.setItem('access_token', accessToken)
+// --- helper chung ---
+const saveToLocalStorage = (key: string, value: string) => {
+  localStorage.setItem(key, value)
 }
 
-export const getAccessTokenFromLocalStorage = () => {
-  return localStorage.getItem('access_token') || ''
+const getFromLocalStorage = (key: string) => {
+  return localStorage.getItem(key) || ''
 }
 
-export const removeAccessTokenFromLocalStorage = () => {
-  localStorage.removeItem('access_token')
+const removeFromLocalStorage = (key: string) => {
+  localStorage.removeItem(key)
 }
 
-export const saveRefreshTokenFromLocalStorage = (refreshToken: string) => {
-  localStorage.setItem('refresh_token', refreshToken)
-}
+// --- access token ---
+export const saveAccessToken = (token: string) => saveToLocalStorage('access_token', token)
+export const getAccessToken = () => getFromLocalStorage('access_token')
+export const removeAccessToken = () => removeFromLocalStorage('access_token')
 
-export const getRefreshTokenFromLocalStorage = () => {
-  return localStorage.getItem('refresh_token') || ''
-}
+// --- refresh token ---
+export const saveRefreshToken = (token: string) => saveToLocalStorage('refresh_token', token)
+export const getRefreshToken = () => getFromLocalStorage('refresh_token')
+export const removeRefreshToken = () => removeFromLocalStorage('refresh_token')
 
-export const removeRefreshTokenFromLocalStorage = () => {
-  localStorage.removeItem('refresh_token')
-}
+// --- avatar ---
+export const saveAvatar = (avatar: string) => saveToLocalStorage('avatar', avatar)
+export const getAvatar = () => getFromLocalStorage('avatar')
+export const removeAvatar = () => removeFromLocalStorage('avatar')
 
-export const saveAvatarFromLocalStorage = (avatar: string) => {
-  localStorage.setItem('avatar', avatar)
-}
+// --- username ---
+export const saveUsername = (username: string) => saveToLocalStorage('username', username)
+export const getUsername = () => getFromLocalStorage('username')
+export const removeUsername = () => removeFromLocalStorage('username')
 
-export const getAvatarFromLocalStorage = () => {
-  return localStorage.getItem('avatar') || ''
-}
+// --- name ---
+export const saveName = (name: string) => saveToLocalStorage('name', name)
+export const getName = () => getFromLocalStorage('name')
+export const removeName = () => removeFromLocalStorage('name')
 
-export const removeAvatarFromLocalStorage = () => {
-  localStorage.removeItem('avatar')
-}
-
-export const saveUsernameFromLocalStorage = (username: string) => {
-  localStorage.setItem('username', username)
-}
-
-export const getUsernameFromLocalStorage = () => {
-  return localStorage.getItem('username') || ''
-}
-
-export const removeUsernameFromLocalStorage = () => {
-  localStorage.removeItem('username')
-}
-
-export const saveNameFromLocalStorage = (name: string) => {
-  return localStorage.setItem('name', name)
-}
-
-export const getNameFromLocalStorage = () => {
-  return localStorage.getItem('name') || ''
-}
-
-export const removeNameFromLocalStorage = () => {
-  localStorage.removeItem('name')
-}
-
-export const saveIdFromLocalStorage = (id: string) => {
-  return localStorage.setItem('id', id)
-}
-
-export const getIdFromLocalStorage = () => {
-  return localStorage.getItem('id') || ''
-}
-
-export const removeIdFromLocalStorage = () => {
-  localStorage.removeItem('id')
-}
+// --- id ---
+export const saveId = (id: string) => saveToLocalStorage('id', id)
+export const getId = () => getFromLocalStorage('id')
+export const removeId = () => removeFromLocalStorage('id')

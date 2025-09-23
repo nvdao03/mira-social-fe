@@ -6,13 +6,12 @@ import useQueryParam from '../../hooks/useQueryParam'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PATH } from '../../constants/path'
 import { useForm } from 'react-hook-form'
+import { useMemo } from 'react'
 
 function SideBarRight() {
   const params = useParams()
   const location = useLocation()
-
   const queryParams: QueryConfig = useQueryParam()
-
   const queryConfig: QueryConfig = {
     limit: queryParams.limit || 5,
     page: queryParams.page || 1
@@ -26,13 +25,17 @@ function SideBarRight() {
     queryFn: () => userApi.getUserSuggestions(queryConfig)
   })
 
-  const pathName = location.pathname
+  const users = useMemo(() => {
+    return userSuggestionsQuery.data?.data.data.users?.map((user: any) => user.unfollowed_users) || []
+  }, [userSuggestionsQuery.data])
 
   const handleSubmitSearch = handleSubmit((data) => {
     if (data.key.trim()) {
       navigate(`${PATH.EXPLORE}?key=${encodeURIComponent(data.key.trim())}`)
     }
   })
+
+  const pathName = location.pathname
 
   return (
     <aside className='hidden lg:block w-[330px] px-4 pb-4 pt-[6px]'>
@@ -71,27 +74,15 @@ function SideBarRight() {
           <div className='bg-gray-900 rounded-xl p-4 bg-transparent border border-solid border-[#2E3235]'>
             <h2 className='font-bold mb-2 text-[20px]'>Who to follow</h2>
             <div className='flex flex-col mt-3'>
-              {userSuggestionsQuery.data?.data.data.users &&
-                userSuggestionsQuery.data?.data.data.users.map((user: any) => (
-                  <UserCard key={user.unfollowed_users._id} user={user.unfollowed_users} />
-                ))}
+              {users.map((user: any) => (
+                <UserCard key={user._id} user={user} />
+              ))}
             </div>
             <Link to={PATH.CONNECT} className='block text-[13px] text-[#1d9bf0] mt-2 hover:underline font-semibold'>
               Show more
             </Link>
           </div>
         )}
-      </div>
-      <div className='ml-1 w-full text-sm text-gray-400 border-t border-gray-700 mt-4'>
-        <p className='text-[12px] flex items-center justify-center gap-3'>
-          <Link to={PATH.PRIVACY_POLICY} className='hover:underline'>
-            Privacy Policy
-          </Link>
-          <span>|</span>
-          <Link to={PATH.TERMS_OF_SERVICE} className='hover:underline'>
-            Terms of Service
-          </Link>
-        </p>
       </div>
     </aside>
   )
