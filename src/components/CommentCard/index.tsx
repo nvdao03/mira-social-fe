@@ -4,6 +4,7 @@ import type { CommentType } from '../../types/comment.type'
 import { AppContext } from '../../contexts/app.context'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { commentApi } from '../../apis/comment.api'
+import { useNavigate } from 'react-router-dom'
 
 interface PropTypes {
   comment: CommentType
@@ -13,6 +14,7 @@ interface PropTypes {
 function CommentCard({ comment, post_id }: PropTypes) {
   const { id } = useContext(AppContext)
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const menuRef = useRef<HTMLDivElement | null>(null)
   const [open, setOpen] = useState<boolean>(false)
 
@@ -42,12 +44,12 @@ function CommentCard({ comment, post_id }: PropTypes) {
   return (
     <div className='flex items-start px-4 py-5 gap-x-3 border-b border-solid border-[#2e3235]'>
       {/* Avatar */}
-      <div className='w-10 h-10 rounded-full'>
+      <div onClick={() => navigate(`/${comment.user._id}`)} className='w-10 h-10 rounded-full cursor-pointer'>
         <img src={comment.user.avatar || AvatarDefault} alt='' className='w-full h-full rounded-full object-cover' />
       </div>
       {/* Content */}
       <div className=''>
-        <div className='flex items-center'>
+        <div onClick={() => navigate(`/${comment.user._id}`)} className='flex items-center cursor-pointer'>
           <span className={`hover:underline text-[15px] leading-[1.5] font-semibold`}>{comment.user.name}</span>
           {comment.user.verify === 1 && (
             <svg
