@@ -6,6 +6,7 @@ import { schemaForgotPassword, type ForgotPasswordFormValues } from '../../utils
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { authApi } from '../../apis/auth.api'
+import Loading from '../../components/Loading'
 
 type ForgotPasswordFromData = ForgotPasswordFormValues
 
@@ -67,9 +68,15 @@ export default function ForgotPassword() {
               />
             </div>
             <div className=''>
-              <button className='w-full py-[13px] px-4 bg-[#238636] rounded-[5px] mt-[10px] text-[14px] font-semibold'>
-                Submit
-              </button>
+              {forgotPasswordMutation.isLoading ? (
+                <button className='flex justify-center items-center w-full py-[13px] px-4 bg-[#238636] rounded-[5px] mt-[10px] text-[14px] font-semibold'>
+                  <Loading size={'w-5 h-5'} />
+                </button>
+              ) : (
+                <button className='w-full py-[13px] px-4 bg-[#238636] rounded-[5px] mt-[10px] text-[14px] font-semibold'>
+                  Submit
+                </button>
+              )}
             </div>
           </form>
         </div>
