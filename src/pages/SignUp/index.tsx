@@ -15,6 +15,7 @@ import { AppContext } from '../../contexts/app.context'
 import { toast } from 'react-toastify'
 import { MESSAGE } from '../../constants/message'
 import { HTTP_STATUS } from '../../constants/httpStatus'
+import Loading from '../../components/Loading'
 
 type SignUpFormData = SignUpFormValues
 
@@ -164,22 +165,28 @@ function SignUp() {
                 </div>
               </div>
               <div>
-                <button className='flex items-center justify-center gap-x-2 bg-[#1F2328] py-[17px] px-3 w-full rounded-[5px] text-color_auth font-semibold hover:opacity-90 cursor-pointer transition-all duration-300 ease-in-out'>
-                  Create account
-                  <span>
-                    <svg
-                      aria-hidden='true'
-                      height='16'
-                      viewBox='0 0 16 16'
-                      version='1.1'
-                      width='16'
-                      data-view-component='true'
-                      fill='#FFF'
-                    >
-                      <path d='M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z'></path>
-                    </svg>
-                  </span>
-                </button>
+                {signUpMutation.isLoading ? (
+                  <button className='flex items-center justify-center gap-x-2 bg-[#1F2328] py-[17px] px-3 w-full rounded-[5px] text-color_auth font-semibold hover:opacity-90 cursor-pointer transition-all duration-300 ease-in-out'>
+                    <Loading size={'w-5 h-5'} />
+                  </button>
+                ) : (
+                  <button className='flex items-center justify-center gap-x-2 bg-[#1F2328] py-[17px] px-3 w-full rounded-[5px] text-color_auth font-semibold hover:opacity-90 cursor-pointer transition-all duration-300 ease-in-out'>
+                    Create account
+                    <span>
+                      <svg
+                        aria-hidden='true'
+                        height='16'
+                        viewBox='0 0 16 16'
+                        version='1.1'
+                        width='16'
+                        data-view-component='true'
+                        fill='#FFF'
+                      >
+                        <path d='M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z'></path>
+                      </svg>
+                    </span>
+                  </button>
+                )}
               </div>
             </form>
             <p className='text-[14px] mt-[12px] text-[#57606A] leading-[1.5]'>

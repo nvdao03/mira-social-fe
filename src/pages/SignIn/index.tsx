@@ -15,6 +15,7 @@ import { AppContext } from '../../contexts/app.context'
 import { HTTP_STATUS } from '../../constants/httpStatus'
 import useQueryParam from '../../hooks/useQueryParam'
 import { saveAccessToken, saveId, saveName, saveRefreshToken, saveUsername } from '../../utils/auth'
+import Loading from '../../components/Loading'
 
 type SignInFromData = SignInFormValues
 
@@ -154,9 +155,15 @@ function SignIn() {
               />
             </div>
             <div className=''>
-              <button className='w-full py-[13px] px-4 bg-[#238636] rounded-[5px] mt-[10px] text-[14px] font-semibold'>
-                Sign in
-              </button>
+              {signInMutation.isLoading ? (
+                <button className='w-full flex items-center justify-center py-[13px] px-4 bg-[#238636] rounded-[5px] mt-[10px] text-[14px] font-semibold'>
+                  <Loading size={'w-5 h-5'} />
+                </button>
+              ) : (
+                <button className='w-full py-[13px] px-4 bg-[#238636] rounded-[5px] mt-[10px] text-[14px] font-semibold'>
+                  Sign in
+                </button>
+              )}
               <div className='flex items-center justify-center mt-4 text-color_auth'>
                 <hr className='w-full bg-[#3d444d]' />
                 <span className='px-4 text-[15px]'>or</span>
